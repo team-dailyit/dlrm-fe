@@ -1,0 +1,19 @@
+packages:
+  - 'apps/*'
+  - 'packages/*'
+
+# packages/shared 가 컴파일되는 기준이라 워크스페이스 간에 반드시 같아야 하는 것만 둡니다.
+# 린트 · 테스트 도구처럼 갈려도 무해한 것은 각 package.json 에서 관리합니다.
+catalog:
+  react: ^19.2.8
+  react-dom: ^19.2.8
+  '@types/react': ^19.2.17
+  '@types/react-dom': ^19.2.3
+  # 런타임이 Node 22 이므로 타입도 22 계열로 맞춥니다.
+  '@types/node': ^22.20.1
+  # 상한 있음: typescript-eslint 가 typescript <6.1.0 만 지원
+  typescript: ~6.0.3
+
+ignoredBuiltDependencies:
+  - sharp
+  - unrs-resolver

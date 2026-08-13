@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    /* 환경에 따라 달라지는 target · lib · types 는 각 패키지에서 지정합니다. */
+    "strict": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+
+    "jsx": "react-jsx"
+  }
+}

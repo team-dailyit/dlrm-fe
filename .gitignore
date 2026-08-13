@@ -1,0 +1,26 @@
+node_modules
+
+# pnpm 외 패키지 매니저 산출물
+package-lock.json
+yarn.lock
+
+# 빌드 산출물
+dist
+.next/
+next-env.d.ts
+*.tsbuildinfo
+coverage
+
+# 환경변수
+.env
+.env.*
+!.env.example
+
+*.log
+*.pem
+
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea
+.DS_Store

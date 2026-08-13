@@ -1,0 +1,13 @@
+node_modules
+pnpm-lock.yaml
+
+# 빌드 산출물
+dist
+build
+out
+.next
+coverage
+
+# 자동 생성
+next-env.d.ts
+*.tsbuildinfo

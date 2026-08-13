@@ -1,0 +1,40 @@
+{
+  "name": "dlrm-fe",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "packageManager": "pnpm@10.34.5",
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "10.34.5",
+      "onFail": "download"
+    }
+  },
+  "scripts": {
+    "preinstall": "npx only-allow pnpm",
+    "dev:service": "pnpm --filter service dev",
+    "dev:admin": "pnpm --filter admin dev",
+    "build:service": "pnpm --filter service build",
+    "build:admin": "pnpm --filter admin build",
+    "build": "pnpm -r build",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "pnpm -r test",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^21.2.1",
+    "@commitlint/config-conventional": "^21.2.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.3.0",
+    "prettier": "^3.9.6",
+    "prettier-plugin-tailwindcss": "^0.8.1",
+    "typescript": "catalog:"
+  }
+}
