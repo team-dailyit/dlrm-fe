@@ -11,6 +11,9 @@ next-env.d.ts
 *.tsbuildinfo
 coverage
 
+# Turborepo
+.turbo
+
 # 환경변수
 .env
 .env.*
