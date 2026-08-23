@@ -1,3 +1,4 @@
+import 'shared/styles/tokens.css';
 import './styles/index.scss';
 
 import { RouterProvider } from 'react-router';

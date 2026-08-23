@@ -1,0 +1,20 @@
+@use 'sass:map';
+
+/// z-index 를 숫자로 흩뿌리지 않도록 레이어 이름으로 관리합니다.
+$z-layers: (
+  'base': 0,
+  'dropdown': 100,
+  'sticky': 200,
+  'overlay': 300,
+  'modal': 400,
+  'toast': 500,
+);
+
+/// @example scss - z-index: z('modal');
+@function z($name) {
+  @if not map.has-key($z-layers, $name) {
+    @error '알 수 없는 z-index 레이어 "#{$name}". 사용 가능: #{map.keys($z-layers)}';
+  }
+
+  @return map.get($z-layers, $name);
+}

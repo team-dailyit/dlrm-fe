@@ -1,25 +1,10 @@
-@import 'shared/styles/tokens.css';
-
-:root {
-  --safe-area-top: env(safe-area-inset-top, 0px);
-  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
-}
-
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-html,
-body {
-  margin: 0;
-  padding: 0;
-}
-
-#root {
-  min-width: 360px;
-  max-width: 430px;
-  margin-inline: auto;
-  min-height: 100svh;
-}
+// 전역 스타일 진입점 (base 레이어만 CSS 출력).
+//
+// 디자인 토큰(shared/styles/tokens.css)은 순수 CSS 라 @use 로 못 불러오고,
+// CSS @import 는 @use 보다 앞에 올 수 없어 순서가 꼬입니다.
+// → 토큰은 app.tsx 에서 이 파일보다 "먼저" import 합니다.
+//
+// abstracts(믹스인·함수)는 vite.config 의 additionalData 로 자동 주입되므로
+// 여기서 따로 @use 하지 않습니다.
+@use 'base/reset';
+@use 'base/global';
