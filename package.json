@@ -19,6 +19,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "turbo run test",
+    "tokens:build": "node scripts/style-dictionary.mjs",
     "prepare": "husky"
   },
   "devDependencies": {
@@ -26,8 +27,10 @@
     "@commitlint/config-conventional": "^21.2.0",
     "husky": "^9.1.7",
     "lint-staged": "^17.3.0",
+    "@tokens-studio/sd-transforms": "^2.0.3",
     "prettier": "^3.9.6",
     "prettier-plugin-tailwindcss": "^0.8.1",
+    "style-dictionary": "^5.5.2",
     "turbo": "^2.10.11",
     "typescript": "catalog:"
   }

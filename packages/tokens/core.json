@@ -1,0 +1,54 @@
+{
+  "color": {
+    "white": { "value": "#ffffff", "type": "color" },
+    "slate": {
+      "50": { "value": "#f8fafc", "type": "color" },
+      "100": { "value": "#f1f5f9", "type": "color" },
+      "200": { "value": "#e2e8f0", "type": "color" },
+      "300": { "value": "#cbd5e1", "type": "color" },
+      "400": { "value": "#94a3b8", "type": "color" },
+      "500": { "value": "#64748b", "type": "color" },
+      "600": { "value": "#475569", "type": "color" },
+      "700": { "value": "#334155", "type": "color" },
+      "800": { "value": "#1e293b", "type": "color" },
+      "900": { "value": "#0f172a", "type": "color" }
+    },
+    "primary": {
+      "100": { "value": "#ffedeb", "type": "color" },
+      "200": { "value": "#ffc0c2", "type": "color" },
+      "300": { "value": "#ffa295", "type": "color" },
+      "400": { "value": "#ff7d6b", "type": "color" },
+      "500": { "value": "#ff614c", "type": "color" },
+      "600": { "value": "#f4462f", "type": "color" },
+      "700": { "value": "#e93018", "type": "color" }
+    },
+    "blue": {
+      "100": { "value": "#d6f9ff", "type": "color" },
+      "500": { "value": "#2099fd", "type": "color" },
+      "600": { "value": "#337aff", "type": "color" }
+    },
+    "state": {
+      "error": { "value": "#e91616", "type": "color" },
+      "success": { "value": "#1687e9", "type": "color" }
+    }
+  },
+  "radius": {
+    "xs": { "value": "4", "type": "borderRadius" },
+    "sm": { "value": "8", "type": "borderRadius" },
+    "md": { "value": "12", "type": "borderRadius" },
+    "lg": { "value": "16", "type": "borderRadius" },
+    "xl": { "value": "20", "type": "borderRadius" },
+    "2xl": { "value": "24", "type": "borderRadius" },
+    "3xl": { "value": "32", "type": "borderRadius" },
+    "pill": { "value": "999", "type": "borderRadius" }
+  },
+  "spacing": {
+    "xs": { "value": "4", "type": "spacing" },
+    "sm": { "value": "8", "type": "spacing" },
+    "md": { "value": "12", "type": "spacing" },
+    "lg": { "value": "16", "type": "spacing" },
+    "xl": { "value": "20", "type": "spacing" },
+    "2xl": { "value": "24", "type": "spacing" },
+    "3xl": { "value": "32", "type": "spacing" }
+  }
+}
