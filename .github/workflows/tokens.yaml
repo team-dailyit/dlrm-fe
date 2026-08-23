@@ -1,0 +1,59 @@
+name: Tokens
+
+# Tokens Studio 플러그인이 packages/tokens/** 를 dev 에 push 하면
+# tokens.css 를 재생성해서 다시 커밋합니다. (로컬 수동 pnpm tokens:build 불필요)
+on:
+  push:
+    branches: [dev]
+    paths:
+      - 'packages/tokens/**'
+      - 'scripts/style-dictionary.mjs'
+  # UI 에서 수동 재실행
+  workflow_dispatch:
+
+# 재생성한 tokens.css 를 되커밋하려면 쓰기 권한이 필요합니다.
+permissions:
+  contents: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 액션은 커밋 SHA 로 고정합니다. 태그는 다른 커밋으로 옮겨질 수 있습니다.
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      # 버전 미지정 — package.json 의 packageManager 를 읽습니다.
+      - name: Setup pnpm
+        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
+
+      - name: Setup Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Build tokens
+        run: pnpm tokens:build
+
+      # tokens.css 가 실제로 바뀐 경우에만 되커밋합니다.
+      # 이 커밋은 packages/tokens/** 를 건드리지 않으므로 워크플로우를 재트리거하지 않습니다.
+      - name: Commit regenerated CSS
+        run: |
+          if git diff --quiet -- packages/shared/src/styles/tokens.css; then
+            echo "tokens.css 변경 없음 — 스킵"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add packages/shared/src/styles/tokens.css
+          git commit -m "chore: 토큰 CSS 자동 재생성 [skip ci]"
+          git push
