@@ -1,0 +1,4 @@
+// abstracts 공개 진입점. Vite 가 모든 SCSS 에 `@use 'abstracts' as *` 로 주입합니다.
+// 여기서는 CSS 를 출력하지 않고 믹스인·함수·맵만 forward 합니다.
+@forward 'breakpoints';
+@forward 'z-index';
