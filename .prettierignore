@@ -11,3 +11,8 @@ coverage
 # 자동 생성
 next-env.d.ts
 *.tsbuildinfo
+
+# 토큰 파이프라인: 생성물(직접 수정 금지) · Tokens Studio 동기화 원본
+# Prettier 가 건드리면 pnpm tokens:build 결과와 매번 어긋남
+packages/shared/src/styles/tokens.css
+packages/tokens
