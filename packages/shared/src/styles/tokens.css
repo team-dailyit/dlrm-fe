@@ -62,7 +62,7 @@
   --border-brand: var(--color-primary-500);
 }
 
-[data-theme="dark"] {
+[data-theme='dark'] {
   --text-primary: var(--color-slate-50);
   --text-secondary: var(--color-slate-300);
   --text-tertiary: var(--color-slate-400);
