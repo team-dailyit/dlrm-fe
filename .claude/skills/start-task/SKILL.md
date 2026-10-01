@@ -1,14 +1,14 @@
 ---
 name: start-task
 description: JIRA 티켓의 부족한 필드를 보완하고, 브랜치를 생성/체크아웃하고 push한다. 사용자가 티켓 번호나 링크를 주며 "작업 시작"을 요청할 때 사용한다.
-allowed-tools: Bash(git status:*), Bash(git branch:*), Bash(git ls-remote:*), Bash(git checkout:*), Bash(git pull:*), Bash(git push:*), mcp__atlassian__getAccessibleAtlassianResources, mcp__atlassian__getJiraIssue, mcp__atlassian__editJiraIssue, mcp__atlassian__transitionJiraIssue, mcp__atlassian__discover, mcp__atlassian__executeRead
+allowed-tools: Bash(git status:*), Bash(git branch:*), Bash(git ls-remote:*), Bash(git checkout:*), Bash(git pull:*), Bash(git push:*), mcp__atlassian__getAccessibleAtlassianResources, mcp__atlassian__getJiraIssue, mcp__atlassian__editJiraIssue, mcp__atlassian__discover, mcp__atlassian__executeRead
 ---
 
 # start-task
 
-JIRA 티켓을 기반으로 작업을 시작할 준비를 한다. 티켓 보완, 브랜치 생성/push, 상태 변경 세 단계로 진행한다.
+JIRA 티켓을 기반으로 작업을 시작할 준비를 한다. 티켓 보완, 브랜치 생성/push 두 단계로 진행한다.
 
-JIRA 작업은 Atlassian MCP(`.mcp.json`의 `atlassian` 서버) 도구로 한다. `getJiraIssue`, `editJiraIssue`, `transitionJiraIssue`는 바로 호출할 수 있고, 그 외 도구(아래의 `getJiraIssueTypeMetaWithFields`, `listJiraIssueTransitions` 등)는 `discover`로 찾은 뒤 `executeRead`로 호출한다.
+JIRA 작업은 Atlassian MCP(`.mcp.json`의 `atlassian` 서버) 도구로 한다. `getJiraIssue`, `editJiraIssue`는 바로 호출할 수 있고, 그 외 도구(아래의 `getJiraIssueTypeMetaWithFields` 등)는 `discover`로 찾은 뒤 `executeRead`로 호출한다.
 
 > hotfix(`main`에서 분기하는 긴급 수정)에는 이 스킬을 쓰지 않는다. 티켓이 hotfix로 보이면 멈추고 `docs/commit-convention.md`의 hotfix 절차대로 수동 진행하도록 안내한다.
 
@@ -18,7 +18,7 @@ JIRA 작업은 Atlassian MCP(`.mcp.json`의 `atlassian` 서버) 도구로 한다
 - 쓸 수 없으면(서버 미승인, 미인증, 권한 오류 등) **fallback 모드**로 진행한다.
   - 사용자에게 연결 방법을 안내한다: "`/mcp`에서 `atlassian`을 선택해 로그인해 주세요. 승인 창을 거절했다면 `claude mcp reset-project-choices` 후 다시 시작하면 됩니다."
   - 지금 연결하지 않겠다고 하면, 티켓 내용(제목, 설명, 기존 필드)을 붙여넣어 달라고 요청하고 그 내용으로 진행한다.
-  - fallback 모드에서는 JIRA에 쓰는 작업(필드 수정, 상태 변경)을 하지 않고, 반영할 내용을 완료 보고에 정리해 사용자가 직접 입력하게 한다.
+  - fallback 모드에서는 JIRA에 쓰는 작업(필드 수정)을 하지 않고, 반영할 내용을 완료 보고에 정리해 사용자가 직접 입력하게 한다.
 
 ## 1단계: 티켓 필드 보완
 
@@ -63,14 +63,7 @@ git push -u origin {type}/{JIRA-번호}-{짧은-설명}
 - 커밋되지 않은 변경이 있는 경우 → 체크아웃 전에 멈추고 사용자에게 처리 방법을 확인받는다.
 - 동일한 브랜치명이 이미 존재하는 경우 → 자동으로 넘어가지 말고 사용자에게 확인받는다.
 - `develop` 브랜치가 최신 상태가 아닌 경우(pull 충돌 등) → 진행을 멈추고 알린다.
-- push 실패 시(권한 문제, 네트워크 등) → 원인을 알리고 3단계(상태 변경)는 진행하지 않는다.
-
-## 3단계: 티켓 상태 변경
-
-브랜치 push가 성공하면 티켓 상태를 '진행중'으로 변경한다.
-
-- `discover` → `executeRead`로 `listJiraIssueTransitions`를 호출해 가능한 전환 목록을 조회해 '진행중'(또는 In Progress)에 해당하는 전환 ID를 찾고, `transitionJiraIssue`로 변경한다.
-- 해당 전환이 없거나 실패하면 사용자에게 알리고, 브랜치/push 작업 자체는 되돌리지 않는다.
+- push 실패 시(권한 문제, 네트워크 등) → 원인을 알리고 멈춘다.
 
 ## 완료 후 보고
 
@@ -78,5 +71,4 @@ git push -u origin {type}/{JIRA-번호}-{짧은-설명}
 
 - 보완된 티켓 필드 내용 (fallback 모드라면 "JIRA에 직접 반영할 내용"으로 정리)
 - 생성 및 push된 브랜치명
-- 변경된 티켓 상태 (fallback 모드라면 "직접 변경 필요")
 - 다음 단계(`review-task`)를 자연스럽게 안내
