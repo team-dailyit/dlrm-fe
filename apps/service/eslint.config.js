@@ -18,6 +18,10 @@ export default defineConfig([
     ],
     languageOptions: {
       globals: globals.browser,
+      // 에디터는 여러 워크스페이스 config 를 한 프로세스에서 로드하므로 기준 경로를 명시합니다.
+      parserOptions: {
+        tsconfigRootDir: import.meta.dirname,
+      },
     },
     plugins: {
       'simple-import-sort': simpleImportSort,
