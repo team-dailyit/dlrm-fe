@@ -12,6 +12,8 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@tanstack/react-query": "catalog:",
+    "@tanstack/react-query-devtools": "catalog:",
     "next": "16.3.0",
     "react": "catalog:",
     "react-dom": "catalog:",

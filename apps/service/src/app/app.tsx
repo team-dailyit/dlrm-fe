@@ -2,8 +2,13 @@ import './styles/index.scss';
 
 import { RouterProvider } from 'react-router';
 
+import Providers from './Providers';
 import { router } from './router';
 
 export const App = () => {
-  return <RouterProvider router={router} />;
+  return (
+    <Providers>
+      <RouterProvider router={router} />
+    </Providers>
+  );
 };

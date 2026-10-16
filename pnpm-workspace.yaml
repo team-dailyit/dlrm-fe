@@ -9,6 +9,9 @@ catalog:
   react-dom: ^19.2.8
   '@types/react': ^19.2.17
   '@types/react-dom': ^19.2.3
+  # QueryClient 를 context 로 공유하므로 인스턴스가 하나여야 합니다.
+  '@tanstack/react-query': ^5.104.3
+  '@tanstack/react-query-devtools': ^5.104.3
   # 런타임이 Node 22 이므로 타입도 22 계열로 맞춥니다.
   '@types/node': ^22.20.1
   # 상한 있음: typescript-eslint 가 typescript <6.1.0 만 지원
