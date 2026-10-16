@@ -7,7 +7,7 @@ import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
 export default defineConfig([
-  globalIgnores(['dist', 'coverage']),
+  globalIgnores(['dist', 'coverage', 'storybook-static']),
   {
     files: ['**/*.{ts,tsx}'],
     extends: [
@@ -30,5 +30,10 @@ export default defineConfig([
       'simple-import-sort/imports': 'error',
       'simple-import-sort/exports': 'error',
     },
+  },
+  {
+    // 스토리는 meta 와 story 객체를 export 하므로 컴포넌트만 export 하라는 규칙을 적용하지 않는다
+    files: ['**/*.stories.tsx'],
+    rules: { 'react-refresh/only-export-components': 'off' },
   },
 ]);

@@ -27,3 +27,6 @@ coverage
 !.vscode/extensions.json
 .idea
 .DS_Store
+
+# Storybook
+storybook-static
