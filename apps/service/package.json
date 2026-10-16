@@ -18,7 +18,8 @@
     "react": "catalog:",
     "react-dom": "catalog:",
     "react-router": "^8.3.0",
-    "shared": "workspace:*"
+    "shared": "workspace:*",
+    "zustand": "^5.0.15"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",
