@@ -1,8 +1,23 @@
-import { createBrowserRouter } from 'react-router';
+import { createBrowserRouter, type RouteObject } from 'react-router';
 
-export const router = createBrowserRouter([
+import { MapHomePage } from '@/views/map-home';
+import { NeighborhoodPage } from '@/views/neighborhood';
+import { NotFoundPage } from '@/views/not-found';
+import { OnboardingPage } from '@/views/onboarding';
+import { PlaceDetailPage } from '@/views/place-detail';
+
+import RedirectToMapPlace from './RedirectToMapPlace';
+
+export const routes: RouteObject[] = [
+  { path: '/', Component: OnboardingPage },
+  { path: '/neighborhood', Component: NeighborhoodPage },
   {
-    path: '/',
-    Component: () => <></>,
+    path: '/map',
+    Component: MapHomePage,
+    children: [{ path: 'place/:id', Component: PlaceDetailPage }],
   },
-]);
+  { path: '/place/:id', Component: RedirectToMapPlace },
+  { path: '*', Component: NotFoundPage },
+];
+
+export const router = createBrowserRouter(routes);
