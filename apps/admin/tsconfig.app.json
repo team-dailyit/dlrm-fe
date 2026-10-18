@@ -3,7 +3,7 @@
   "compilerOptions": {
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
 
-    /* vite.config.ts 의 resolve.alias 와 동일하게 유지해야 합니다. */
+    /* vite.config.ts 의 resolve.tsconfigPaths 로 Vite 도 이 paths 를 그대로 씁니다. */
     "paths": {
       "@/*": ["./src/*"]
     }
