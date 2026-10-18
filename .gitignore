@@ -6,8 +6,6 @@ yarn.lock
 
 # 빌드 산출물
 dist
-.next/
-next-env.d.ts
 *.tsbuildinfo
 coverage
 

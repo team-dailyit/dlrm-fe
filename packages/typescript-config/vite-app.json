@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "./base.json",
+  "compilerOptions": {
+    /* 브라우저에서 도는 Vite 앱의 src 용입니다.
+       paths · tsBuildInfoFile 은 이 파일 기준 상대 경로로 풀리므로 각 앱에서 지정합니다. */
+    "lib": ["ES2023", "DOM"],
+    "types": ["vite/client"],
+    "allowArbitraryExtensions": true,
+
+    /* Bundler mode */
+    "allowImportingTsExtensions": true,
+
+    /* Linting */
+    "erasableSyntaxOnly": true,
+    "noFallthroughCasesInSwitch": true
+  }
+}

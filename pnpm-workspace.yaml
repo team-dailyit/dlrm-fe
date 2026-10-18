@@ -16,7 +16,3 @@ catalog:
   '@types/node': ^22.20.1
   # 상한 있음: typescript-eslint 가 typescript <6.1.0 만 지원
   typescript: ~6.0.3
-
-ignoredBuiltDependencies:
-  - sharp
-  - unrs-resolver

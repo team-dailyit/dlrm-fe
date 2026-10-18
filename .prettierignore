@@ -5,9 +5,7 @@ pnpm-lock.yaml
 dist
 build
 out
-.next
 coverage
 
 # 자동 생성
-next-env.d.ts
 *.tsbuildinfo
