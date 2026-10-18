@@ -1,0 +1,8 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "./base.json",
+  "compilerOptions": {
+    /* 빌드 없이 소스를 내보내는 워크스페이스 패키지(packages/shared 등)용입니다. */
+    "lib": ["ES2023"]
+  }
+}

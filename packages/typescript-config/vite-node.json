@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "./base.json",
+  "compilerOptions": {
+    /* vite.config.ts · vitest.config.ts 처럼 Node 에서 도는 설정 파일용입니다. */
+    "lib": ["ES2023"],
+    "types": ["node"],
+
+    /* Node 에서 실행되므로 base 의 bundler 설정을 덮어씁니다.
+       module 과 moduleResolution 은 반드시 함께 바꿔야 합니다. */
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+
+    "allowImportingTsExtensions": true,
+
+    /* Linting */
+    "erasableSyntaxOnly": true,
+    "noFallthroughCasesInSwitch": true
+  }
+}
