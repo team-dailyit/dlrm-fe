@@ -23,7 +23,6 @@
     "shared": "workspace:*"
   },
   "devDependencies": {
-    "@eslint/js": "^9.39.5",
     "@storybook/react-vite": "^10.6.2",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.2",
@@ -33,17 +32,15 @@
     "@types/react-dom": "catalog:",
     "@vitejs/plugin-react": "^6.0.5",
     "eslint": "^9.39.5",
-    "eslint-plugin-react-hooks": "^7.1.1",
-    "eslint-plugin-react-refresh": "^0.5.3",
-    "eslint-plugin-simple-import-sort": "^14.0.0",
-    "globals": "^17.7.0",
+    "eslint-config": "workspace:*",
     "jsdom": "^30.0.1",
     "kakao.maps.d.ts": "^0.1.40",
     "sass-embedded": "^1.100.0",
     "storybook": "^10.6.2",
     "typescript": "catalog:",
-    "typescript-eslint": "^8.66.0",
+    "typescript-config": "workspace:*",
     "vite": "^8.2.0",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.10",
+    "vitest-config": "workspace:*"
   }
 }
