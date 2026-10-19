@@ -11,6 +11,7 @@
     "preinstall": "npx only-allow pnpm",
     "dev:service": "turbo run dev --filter=service",
     "dev:admin": "turbo run dev --filter=admin",
+    "storybook:service": "turbo run storybook --filter=service",
     "build:service": "turbo run build --filter=service",
     "build:admin": "turbo run build --filter=admin",
     "build": "turbo run build",
