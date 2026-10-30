@@ -5,7 +5,6 @@ import {
   expect,
   it,
   type MockInstance,
-  test,
   vi,
 } from 'vitest';
 
@@ -186,7 +185,7 @@ describe('referencePointStore', () => {
     });
 
     describe('저장된 값이 예상과 다를 때', () => {
-      test.each([
+      it.each([
         ['반경이 선택지에 없으면', { radius: 250 }, { radius: 500 }],
         ['반경이 숫자가 아니면', { radius: '300' }, { radius: 500 }],
         [
