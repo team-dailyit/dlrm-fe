@@ -8,5 +8,5 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src", "vitest.setup.ts", ".storybook"]
+  "include": ["src", "vitest.setup.ts", ".storybook/preview.ts"]
 }
