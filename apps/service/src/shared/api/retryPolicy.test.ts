@@ -1,4 +1,4 @@
-import { describe, expect, it, test } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import { ApiError, NetworkError } from './errors';
 import { getRetryDelay, MAX_RETRY_COUNT, shouldRetry } from './retryPolicy';
@@ -6,14 +6,14 @@ import { getRetryDelay, MAX_RETRY_COUNT, shouldRetry } from './retryPolicy';
 describe('retryPolicy', () => {
   describe('shouldRetry', () => {
     describe(`실패 횟수가 ${MAX_RETRY_COUNT}회 미만일 때`, () => {
-      test.each([
+      it.each([
         ['5xx ApiError', new ApiError(503, '503 /api/neighborhoods')],
         ['NetworkError', new NetworkError('/api/neighborhoods')],
       ])('%s이면 재시도합니다', (_label, error) => {
         expect(shouldRetry(0, error)).toBe(true);
       });
 
-      test.each([
+      it.each([
         ['4xx ApiError', new ApiError(404, '404 /api/places/unknown')],
         ['JSON 파싱 에러', new SyntaxError('Unexpected token')],
         ['알 수 없는 에러', new Error('unknown')],

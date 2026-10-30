@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, test, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { createApiClient } from './apiClient';
 import { ApiError, NetworkError } from './errors';
@@ -55,7 +55,7 @@ describe('apiClient', () => {
     });
 
     describe('에러 응답을 받았을 때', () => {
-      test.each([
+      it.each([
         ['4xx', 404],
         ['5xx', 503],
       ])(
@@ -124,7 +124,7 @@ describe('apiClient', () => {
         expect(text).not.toContain('127.056');
       }
 
-      test.each([
+      it.each([
         ['4xx 응답', jsonResponse({}, 400)],
         ['5xx 응답', jsonResponse({}, 500)],
         ['네트워크 오류', new TypeError('Failed to fetch')],

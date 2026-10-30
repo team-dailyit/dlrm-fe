@@ -1,10 +1,10 @@
-import { describe, expect, it, test } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import { maskCoordinates } from './maskCoordinates';
 
 describe('maskCoordinates', () => {
   describe('lat, lng 쿼리가 포함된 URL이 주어졌을 때', () => {
-    test.each([
+    it.each([
       [
         'lat, lng가 함께 있으면',
         '/api/places/nearby?lat=37.5445&lng=127.0560&radius=500',
@@ -24,7 +24,7 @@ describe('maskCoordinates', () => {
       );
     });
 
-    test.each([
+    it.each([
       ['/api/places/nearby?lat=37.5445&lng=127.0560&radius=500', 'radius=500'],
       ['/api/places/nearby?lat=37.5445#top', '#top'],
     ])('%s에서 좌표가 아닌 부분은 유지합니다', (url, kept) => {
