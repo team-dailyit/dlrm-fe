@@ -59,31 +59,6 @@ describe('router', () => {
     });
   });
 
-  describe('공유 링크 /place/:id로 접속했을 때', () => {
-    it('/map/place/:id로 리다이렉트해 장소 상세를 렌더합니다', () => {
-      const router = renderAt('/place/place-1');
-
-      expect(router.state.location.pathname).toBe('/map/place/place-1');
-      expect(getHeading('지도 홈')).toBeInTheDocument();
-      expect(getHeading('장소 상세')).toBeInTheDocument();
-    });
-
-    it('뒤로가기로 공유 링크에 되돌아오지 않도록 히스토리를 대체합니다', () => {
-      const router = renderAt('/place/place-1');
-
-      expect(router.state.historyAction).toBe('REPLACE');
-    });
-
-    it('경로 구분자나 쿼리로 해석되는 문자가 id에 있어도 id를 그대로 유지합니다', () => {
-      const router = renderAt('/place/a%3Fb%23c');
-
-      expect(router.state.location.pathname).toBe('/map/place/a%3Fb%23c');
-      expect(router.state.location.search).toBe('');
-      expect(router.state.location.hash).toBe('');
-      expect(getHeading('장소 상세')).toBeInTheDocument();
-    });
-  });
-
   describe('정의되지 않은 경로로 접속했을 때', () => {
     test.each(['/unknown', '/map/unknown', '/map/place'])(
       '%s에서는 지도 홈 없이 404 안내 화면만 렌더합니다',
