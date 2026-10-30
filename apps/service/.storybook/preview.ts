@@ -2,9 +2,9 @@ import '../src/app/styles/index.scss';
 
 import type { Preview } from '@storybook/react-vite';
 
-// GR-05: 뷰포트 360px 기준으로 설계하므로 모바일 뷰포트를 기본으로 보여줍니다.
 const preview: Preview = {
   parameters: {
+    layout: 'fullscreen',
     viewport: {
       options: {
         dlrmMobile: {
