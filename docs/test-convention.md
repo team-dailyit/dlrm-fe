@@ -28,7 +28,7 @@ JavaScript/TypeScript 테스트를 작성할 때 따르는 규칙이다. 테스�
 
 ## 테스트 구조
 
-4. **파일 위치**: 테스트 파일은 구현 파일과 가까운 곳에 둔다.
+4. **파일 위치**: 테스트 파일은 구현 파일 옆에 `<구현 파일명>.test.ts(x)`로 둔다.
 
 5. **그룹화**: 예상 결과가 둘 이상의 조건에 의존하면 `describe`로 테스트를 계층적으로 구성한다.
 
@@ -89,6 +89,8 @@ JavaScript/TypeScript 테스트를 작성할 때 따르는 규칙이다. 테스�
 11. **spy 정리**: `vi.spyOn`은 `beforeEach`에서 만들고 `afterEach`에서 `mockRestore()`로 원래 구현을 되돌린다. `describe` 본문에서 바로 만들면 테스트 수집 시점에 한 번만 실행되어 다른 테스트에도 spy가 남는다.
 
     ```typescript
+    import { afterEach, beforeEach, type MockInstance, vi } from 'vitest';
+
     let setItemSpy: MockInstance<Storage['setItem']>;
 
     beforeEach(() => {
