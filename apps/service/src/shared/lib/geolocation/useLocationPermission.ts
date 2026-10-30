@@ -59,9 +59,13 @@ function getCurrentLocation(): Promise<LocationResult> {
   });
 }
 
+function hasPermissionsApi(): boolean {
+  return 'permissions' in navigator;
+}
+
 // Permissions API가 없으면 조회할 수 없으므로 미결정으로 시작한다
 function getInitialPermissionState(): LocationPermissionState {
-  return 'permissions' in navigator ? 'checking' : 'prompt';
+  return hasPermissionsApi() ? 'checking' : 'prompt';
 }
 
 export function useLocationPermission() {
@@ -86,8 +90,11 @@ export function useLocationPermission() {
     setIsRequesting(true);
     const pendingRequest = getCurrentLocation()
       .then((result) => {
-        // Permissions API가 없어도 요청 결과로 권한 상태를 알 수 있다
-        if (result.status === 'granted' || result.status === 'denied') {
+        // 팝업을 닫거나 "이번만 안 함"을 골라도 거부 코드가 오므로, 요청 결과는 실제 권한 상태와 다를 수 있다.
+        // 그래서 권한 상태를 조회할 수 없는 브라우저에서만 요청 결과로 대신 판단한다
+        const isPermissionResult =
+          result.status === 'granted' || result.status === 'denied';
+        if (!hasPermissionsApi() && isPermissionResult) {
           setPermissionState(result.status);
         }
         return result;
@@ -103,7 +110,7 @@ export function useLocationPermission() {
   }, [permissionState]);
 
   useEffect(() => {
-    if (!('permissions' in navigator)) {
+    if (!hasPermissionsApi()) {
       return;
     }
     let isActive = true;

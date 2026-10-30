@@ -237,6 +237,24 @@ describe('useLocationPermission', () => {
     );
   });
 
+  describe('권한 상태가 prompt인데 거부 응답을 받았을 때', () => {
+    // 팝업을 닫거나 "이번만 안 함"을 고른 경우로, 실제 권한 상태는 prompt 그대로입니다
+    it('권한 상태를 바꾸지 않고 다음 요청을 다시 보냅니다', async () => {
+      setupNavigator({ permissions: { state: 'prompt' } });
+      failWithCode(POSITION_ERROR_PERMISSION_DENIED);
+      const { result } = renderLocationPermission();
+      await waitFor(() => {
+        expect(result.current.permissionState).toBe('prompt');
+      });
+
+      await requestLocationInAct(result);
+      await requestLocationInAct(result);
+
+      expect(result.current.permissionState).toBe('prompt');
+      expect(getCurrentPositionMock).toHaveBeenCalledTimes(2);
+    });
+  });
+
   describe('시간 초과 뒤 다시 요청했을 때', () => {
     it('새로 위치를 요청하고 성공하면 좌표를 돌려줍니다', async () => {
       setupNavigator();
