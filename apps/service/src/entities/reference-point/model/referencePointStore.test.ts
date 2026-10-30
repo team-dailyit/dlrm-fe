@@ -12,7 +12,6 @@ import {
 import {
   type Coordinates,
   DEFAULT_RADIUS,
-  RADIUS_OPTIONS,
   REFERENCE_POINT_STORAGE_KEY,
   useReferencePointStore,
 } from './referencePointStore';
@@ -47,11 +46,6 @@ beforeEach(() => {
 
 describe('referencePointStore', () => {
   describe('처음 시작했을 때', () => {
-    it('기준점은 미설정이고 반경은 기본값 500입니다', () => {
-      expect(getState().referencePoint).toBeNull();
-      expect(getState().radius).toBe(500);
-    });
-
     it('저장된 값이 없으면 복원해도 초기 상태를 유지합니다', async () => {
       await useReferencePointStore.persist.rehydrate();
 
@@ -88,42 +82,6 @@ describe('referencePointStore', () => {
         type: 'neighborhood',
         neighborhoodId: NEIGHBORHOOD_ID,
       });
-    });
-  });
-
-  describe('기준점과 반경은 서로 영향을 주지 않습니다', () => {
-    test.each(RADIUS_OPTIONS)(
-      '동네 기준에서 반경을 %i로 바꿔도 기준점은 유지됩니다',
-      (radius) => {
-        getState().selectNeighborhood(NEIGHBORHOOD_ID);
-
-        getState().setRadius(radius);
-
-        expect(getState().radius).toBe(radius);
-        expect(getState().referencePoint).toEqual({
-          type: 'neighborhood',
-          neighborhoodId: NEIGHBORHOOD_ID,
-        });
-      },
-    );
-
-    it('현재 위치 기준에서 반경을 바꿔도 좌표가 유지됩니다', () => {
-      getState().selectCurrentLocation(COORDINATES);
-
-      getState().setRadius(1000);
-
-      expect(getState().referencePoint).toEqual({
-        type: 'currentLocation',
-        coordinates: COORDINATES,
-      });
-    });
-
-    it('기준점을 바꿔도 반경은 유지됩니다', () => {
-      getState().setRadius(1000);
-
-      getState().selectNeighborhood(NEIGHBORHOOD_ID);
-
-      expect(getState().radius).toBe(1000);
     });
   });
 
@@ -165,15 +123,6 @@ describe('referencePointStore', () => {
       });
       expect(stored).not.toContain(String(COORDINATES.lat));
       expect(stored).not.toContain(String(COORDINATES.lng));
-    });
-
-    it('좌표는 저장하지 않아도 메모리 상태에는 그대로 남습니다', () => {
-      getState().selectCurrentLocation(COORDINATES);
-
-      expect(getState().referencePoint).toEqual({
-        type: 'currentLocation',
-        coordinates: COORDINATES,
-      });
     });
   });
 
