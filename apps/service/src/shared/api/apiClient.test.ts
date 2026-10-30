@@ -1,19 +1,16 @@
-import { describe, expect, it, test, vi } from 'vitest';
+import { afterEach, describe, expect, it, test, vi } from 'vitest';
 
-import { createApiClient, MAX_RETRY_COUNT } from './apiClient';
-import { ApiError, RetryExhaustedError } from './errors';
+import { createApiClient } from './apiClient';
+import { ApiError, NetworkError } from './errors';
 
 const BASE_URL = 'https://api.test';
+const REQUEST_TIMEOUT_MS = 10_000;
 
 function jsonResponse(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), { status });
 }
 
-function failedResponses(count: number, status = 500) {
-  return Array.from({ length: count }, () => jsonResponse({}, status));
-}
-
-// 실제 네트워크 요청과 대기 시간을 없애기 위해 fetch는 Mock, wait는 Stub으로 주입합니다
+// 실제 네트워크 요청을 없애기 위해 fetch는 Mock으로 주입합니다
 function setupClient(responses: Array<Response | Error>) {
   const fetchMock = vi.fn<typeof fetch>();
   responses.forEach((response) => {
@@ -23,19 +20,20 @@ function setupClient(responses: Array<Response | Error>) {
       fetchMock.mockResolvedValueOnce(response);
     }
   });
-  const waitStub = vi.fn<(ms: number) => Promise<void>>(() =>
-    Promise.resolve(),
-  );
-  const client = createApiClient({
-    baseUrl: BASE_URL,
-    fetch: fetchMock,
-    wait: waitStub,
-  });
+  const client = createApiClient({ baseUrl: BASE_URL, fetch: fetchMock });
 
-  return { client, fetchMock, waitStub };
+  return { client, fetchMock };
+}
+
+function requestedUrl(fetchMock: ReturnType<typeof vi.fn<typeof fetch>>) {
+  return (fetchMock.mock.calls[0][0] as Request).url;
 }
 
 describe('apiClient', () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   describe('get', () => {
     describe('요청에 성공했을 때', () => {
       it('baseUrl과 쿼리 파라미터를 붙여 요청하고 JSON 응답을 반환합니다', async () => {
@@ -50,143 +48,108 @@ describe('apiClient', () => {
 
         expect(result).toEqual([{ id: 'place-1' }]);
         expect(fetchMock).toHaveBeenCalledTimes(1);
-        expect(String(fetchMock.mock.calls[0][0])).toBe(
+        expect(requestedUrl(fetchMock)).toBe(
           `${BASE_URL}/api/places/nearby?radius=500`,
         );
       });
+    });
 
-      it('재시도가 없으면 대기하지 않습니다', async () => {
-        const { client, waitStub } = setupClient([jsonResponse({ ok: true })]);
+    describe('에러 응답을 받았을 때', () => {
+      test.each([
+        ['4xx', 404],
+        ['5xx', 503],
+      ])(
+        '%s이면 재시도하지 않고 상태 코드를 담은 ApiError를 던집니다',
+        async (_label, status) => {
+          const { client, fetchMock } = setupClient([jsonResponse({}, status)]);
 
-        await client.get('/api/neighborhoods');
+          const error = await client
+            .get('/api/places/unknown')
+            .catch((e: unknown) => e);
 
-        expect(waitStub).not.toHaveBeenCalled();
+          expect(error).toBeInstanceOf(ApiError);
+          expect(error).toMatchObject({ status });
+          expect(fetchMock).toHaveBeenCalledTimes(1);
+        },
+      );
+    });
+
+    describe('네트워크 오류가 났을 때', () => {
+      it('재시도하지 않고 NetworkError를 던집니다', async () => {
+        const { client, fetchMock } = setupClient([
+          new TypeError('Failed to fetch'),
+        ]);
+
+        await expect(client.get('/api/neighborhoods')).rejects.toBeInstanceOf(
+          NetworkError,
+        );
+        expect(fetchMock).toHaveBeenCalledTimes(1);
       });
     });
 
-    describe('4xx 응답을 받았을 때', () => {
-      it('재시도하지 않고 상태 코드를 담은 ApiError를 던집니다', async () => {
-        const { client, fetchMock } = setupClient([jsonResponse({}, 404)]);
+    describe('응답이 제한 시간 안에 오지 않을 때', () => {
+      it('NetworkError를 던집니다', async () => {
+        vi.useFakeTimers();
+        const fetchMock = vi.fn<typeof fetch>(
+          () => new Promise<Response>(() => undefined),
+        );
+        const client = createApiClient({ baseUrl: BASE_URL, fetch: fetchMock });
 
-        const error = await client
-          .get('/api/places/unknown')
+        const result = client
+          .get('/api/neighborhoods')
           .catch((e: unknown) => e);
+        await vi.advanceTimersByTimeAsync(REQUEST_TIMEOUT_MS);
 
-        expect(error).toBeInstanceOf(ApiError);
-        expect(error).toMatchObject({ status: 404 });
-        expect(fetchMock).toHaveBeenCalledTimes(1);
-      });
-
-      it('에러 메시지에 좌표 값을 남기지 않습니다', async () => {
-        const { client } = setupClient([jsonResponse({}, 400)]);
-
-        const error = await client
-          .get('/api/places/nearby', { lat: 37.5445, lng: 127.056 })
-          .catch((e: Error) => e);
-
-        expect(error).toBeInstanceOf(ApiError);
-        expect((error as Error).message).not.toContain('37.5445');
-        expect((error as Error).message).not.toContain('127.056');
+        expect(await result).toBeInstanceOf(NetworkError);
       });
     });
 
     describe('200 응답의 본문을 JSON으로 읽지 못했을 때', () => {
-      it('재시도하지 않고 바로 에러를 던집니다', async () => {
-        const { client, fetchMock } = setupClient([
+      it('SyntaxError를 그대로 던집니다', async () => {
+        const { client } = setupClient([
           new Response('not json', { status: 200 }),
         ]);
 
         await expect(client.get('/api/neighborhoods')).rejects.toBeInstanceOf(
           SyntaxError,
         );
-        expect(fetchMock).toHaveBeenCalledTimes(1);
-      });
-    });
-
-    describe('재시도 대상 오류 뒤에 성공 응답을 받았을 때', () => {
-      test.each([
-        ['5xx 응답', jsonResponse({}, 503)],
-        ['네트워크 오류', new TypeError('Failed to fetch')],
-      ])(
-        '%s이면 자동으로 재시도해 성공한 응답을 반환합니다',
-        async (_label, failure) => {
-          const { client, fetchMock } = setupClient([
-            failure,
-            jsonResponse({ ok: true }),
-          ]);
-
-          const result = await client.get('/api/neighborhoods');
-
-          expect(result).toEqual({ ok: true });
-          expect(fetchMock).toHaveBeenCalledTimes(2);
-        },
-      );
-    });
-
-    describe(`계속 실패해 재시도가 ${MAX_RETRY_COUNT}회를 넘었을 때`, () => {
-      it(`최초 요청 이후 ${MAX_RETRY_COUNT}회까지만 재시도하고 RetryExhaustedError를 던집니다`, async () => {
-        const { client, fetchMock } = setupClient(
-          failedResponses(MAX_RETRY_COUNT + 1),
-        );
-
-        await expect(client.get('/api/neighborhoods')).rejects.toBeInstanceOf(
-          RetryExhaustedError,
-        );
-        expect(fetchMock).toHaveBeenCalledTimes(MAX_RETRY_COUNT + 1);
-      });
-
-      it('재시도 직전에만 지수 간격(300, 600, 1200ms)으로 대기합니다', async () => {
-        const { client, waitStub } = setupClient(
-          failedResponses(MAX_RETRY_COUNT + 1),
-        );
-
-        await client.get('/api/neighborhoods').catch(() => undefined);
-
-        expect(waitStub.mock.calls.map(([ms]) => ms)).toEqual([300, 600, 1200]);
-      });
-
-      it('네트워크 오류가 계속되어도 RetryExhaustedError를 던집니다', async () => {
-        const { client } = setupClient(
-          Array.from(
-            { length: MAX_RETRY_COUNT + 1 },
-            () => new TypeError('Failed to fetch'),
-          ),
-        );
-
-        await expect(client.get('/api/neighborhoods')).rejects.toBeInstanceOf(
-          RetryExhaustedError,
-        );
       });
     });
 
     describe('좌표 쿼리가 포함된 요청이 실패했을 때', () => {
-      it('5xx로 소진되면 에러 메시지에 좌표 값을 남기지 않습니다', async () => {
-        const { client } = setupClient(failedResponses(MAX_RETRY_COUNT + 1));
+      const COORDINATES = { lat: 37.5445, lng: 127.056 };
 
-        const error = await client
-          .get('/api/places/nearby', { lat: 37.5445, lng: 127.056 })
-          .catch((e: Error) => e);
+      function expectNoCoordinates(text: string) {
+        expect(text).not.toContain('37.5445');
+        expect(text).not.toContain('127.056');
+      }
 
-        expect(error).toBeInstanceOf(RetryExhaustedError);
-        expect((error as Error).message).not.toContain('37.5445');
-        expect((error as Error).message).not.toContain('127.056');
-      });
+      test.each([
+        ['4xx 응답', jsonResponse({}, 400)],
+        ['5xx 응답', jsonResponse({}, 500)],
+        ['네트워크 오류', new TypeError('Failed to fetch')],
+      ])(
+        '%s의 에러 메시지에 좌표 값을 남기지 않습니다',
+        async (_label, failure) => {
+          const { client } = setupClient([failure]);
+
+          const error = await client
+            .get('/api/places/nearby', COORDINATES)
+            .catch((e: Error) => e);
+
+          expect(error).toBeInstanceOf(Error);
+          expectNoCoordinates((error as Error).message);
+        },
+      );
 
       it('네트워크 오류 원인(cause)에도 좌표 값을 남기지 않습니다', async () => {
-        const leakyError = new TypeError(
-          'fetch failed: /api/places/nearby?lat=37.5445&lng=127.056',
-        );
-        const { client } = setupClient(
-          Array.from({ length: MAX_RETRY_COUNT + 1 }, () => leakyError),
-        );
+        const { client } = setupClient([new TypeError('Failed to fetch')]);
 
         const error = await client
-          .get('/api/places/nearby', { lat: 37.5445, lng: 127.056 })
+          .get('/api/places/nearby', COORDINATES)
           .catch((e: Error) => e);
 
-        const causeMessage = String(((error as Error).cause as Error).message);
-        expect(causeMessage).not.toContain('37.5445');
-        expect(causeMessage).not.toContain('127.056');
+        expectNoCoordinates(String(((error as Error).cause as Error).message));
       });
     });
   });
