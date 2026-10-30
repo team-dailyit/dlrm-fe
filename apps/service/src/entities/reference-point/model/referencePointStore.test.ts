@@ -1,4 +1,13 @@
-import { afterEach, beforeEach, describe, expect, it, test, vi } from 'vitest';
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type MockInstance,
+  test,
+  vi,
+} from 'vitest';
 
 import {
   type Coordinates,
@@ -170,17 +179,21 @@ describe('referencePointStore', () => {
 
   describe('sessionStorage에 쓰지 못할 때', () => {
     // jsdom은 저장 공간 초과를 재현할 수 없어 setItem이 예외를 던지는 상황을 spy로 만듭니다
-    const setItemSpyMock = vi.spyOn(Storage.prototype, 'setItem');
+    let setItemSpy: MockInstance<Storage['setItem']>;
+
+    beforeEach(() => {
+      setItemSpy = vi
+        .spyOn(Storage.prototype, 'setItem')
+        .mockImplementation(() => {
+          throw new DOMException('quota exceeded', 'QuotaExceededError');
+        });
+    });
 
     afterEach(() => {
-      setItemSpyMock.mockReset();
+      setItemSpy.mockRestore();
     });
 
     it('예외를 던지지 않고 메모리 상태는 정상적으로 바뀝니다', () => {
-      setItemSpyMock.mockImplementation(() => {
-        throw new DOMException('quota exceeded', 'QuotaExceededError');
-      });
-
       expect(() =>
         getState().selectNeighborhood(NEIGHBORHOOD_ID),
       ).not.toThrow();
