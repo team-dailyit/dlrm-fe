@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import { createApiClient } from './apiClient';
 import { ApiError, NetworkError } from './errors';
-import { createApiClient } from '.Client';
 
 const BASE_URL = 'https:/.test';
 const REQUEST_TIMEOUT_MS = 10_000;

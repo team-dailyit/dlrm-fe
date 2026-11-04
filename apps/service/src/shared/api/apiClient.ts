@@ -20,6 +20,7 @@ function toApiError(error: unknown): unknown {
     return new ApiError(
       error.response.status,
       `${error.response.status} ${maskCoordinates(error.request.url)}`,
+      'HTTP_ERROR',
     );
   }
 
