@@ -32,7 +32,6 @@ allowed-tools: Bash(pnpm --filter:*), Bash(git diff:*), Bash(git ls-files:*)
 ## 4단계: 테스트 작성
 
 3단계에서 확정한 케이스를 컨벤션에 맞춰 작성한다. 확정되지 않은 케이스는 추가하지 않는다.
-핵심 로직이나 방어 코드를 검증하는 테스트는 구현을 잠깐 바꿔서 실패하는지 확인한다.
 
 ## 5단계: 실행 및 확인
 
@@ -40,6 +39,8 @@ allowed-tools: Bash(pnpm --filter:*), Bash(git diff:*), Bash(git ls-files:*)
 
 - 예: `pnpm --filter service exec vitest run src/shared/api/apiClient.test.ts`
 - 어드민은 `--filter admin`을 쓴다.
+
+핵심 로직이나 방어 코드를 검증하는 테스트는 구현을 잠깐 바꿔서 실패하는지 확인한다.
 
 **실패 시**
 
