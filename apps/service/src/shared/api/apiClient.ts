@@ -31,10 +31,7 @@ function isErrorResponseBody(body: unknown): body is ErrorResponseBody {
 
 async function toApiError(error: unknown): Promise<unknown> {
   if (isHTTPError(error)) {
-    const body: unknown = await error.response
-      .clone()
-      .json()
-      .catch(() => undefined);
+    const body: unknown = await error.data;
 
     const { code, message } = isErrorResponseBody(body)
       ? body
