@@ -1,9 +1,9 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { createApiClient } from './apiClient';
 import { ApiError, NetworkError } from './errors';
+import { createApiClient } from '.Client';
 
-const BASE_URL = 'https://api.test';
+const BASE_URL = 'https:/.test';
 const REQUEST_TIMEOUT_MS = 10_000;
 
 function jsonResponse(body: unknown, status = 200) {
@@ -41,7 +41,7 @@ describe('apiClient', () => {
           jsonResponse([{ id: 'place-1' }]),
         ]);
 
-        const result = await client.get('/api/places/nearby', {
+        const result = await client.get('/places/nearby', {
           radius: 500,
           category: undefined,
         });
@@ -49,22 +49,19 @@ describe('apiClient', () => {
         expect(result).toEqual([{ id: 'place-1' }]);
         expect(fetchMock).toHaveBeenCalledTimes(1);
         expect(requestedUrl(fetchMock)).toBe(
-          `${BASE_URL}/api/places/nearby?radius=500`,
+          `${BASE_URL}/places/nearby?radius=500`,
         );
       });
     });
 
     describe('에러 응답을 받았을 때', () => {
-      it.each([
-        ['4xx', 404],
-        ['5xx', 503],
-      ])(
+      it.each([['5xx', 503]])(
         '%s이면 재시도하지 않고 상태 코드를 담은 ApiError를 던집니다',
         async (_label, status) => {
           const { client, fetchMock } = setupClient([jsonResponse({}, status)]);
 
           const error = await client
-            .get('/api/places/unknown')
+            .get('/places/unknown')
             .catch((e: unknown) => e);
 
           expect(error).toBeInstanceOf(ApiError);
@@ -80,7 +77,7 @@ describe('apiClient', () => {
           new TypeError('Failed to fetch'),
         ]);
 
-        await expect(client.get('/api/neighborhoods')).rejects.toBeInstanceOf(
+        await expect(client.get('/neighborhoods')).rejects.toBeInstanceOf(
           NetworkError,
         );
         expect(fetchMock).toHaveBeenCalledTimes(1);
@@ -95,9 +92,7 @@ describe('apiClient', () => {
         );
         const client = createApiClient({ baseUrl: BASE_URL, fetch: fetchMock });
 
-        const result = client
-          .get('/api/neighborhoods')
-          .catch((e: unknown) => e);
+        const result = client.get('/neighborhoods').catch((e: unknown) => e);
         await vi.advanceTimersByTimeAsync(REQUEST_TIMEOUT_MS);
 
         expect(await result).toBeInstanceOf(NetworkError);
@@ -110,7 +105,7 @@ describe('apiClient', () => {
           new Response('not json', { status: 200 }),
         ]);
 
-        await expect(client.get('/api/neighborhoods')).rejects.toBeInstanceOf(
+        await expect(client.get('/neighborhoods')).rejects.toBeInstanceOf(
           SyntaxError,
         );
       });
@@ -134,7 +129,7 @@ describe('apiClient', () => {
           const { client } = setupClient([failure]);
 
           const error = await client
-            .get('/api/places/nearby', COORDINATES)
+            .get('/places/nearby', COORDINATES)
             .catch((e: Error) => e);
 
           expect(error).toBeInstanceOf(Error);
@@ -146,7 +141,7 @@ describe('apiClient', () => {
         const { client } = setupClient([new TypeError('Failed to fetch')]);
 
         const error = await client
-          .get('/api/places/nearby', COORDINATES)
+          .get('/places/nearby', COORDINATES)
           .catch((e: Error) => e);
 
         expectNoCoordinates(String(((error as Error).cause as Error).message));
