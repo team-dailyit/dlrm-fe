@@ -26,6 +26,7 @@
 
 - 폴더 구조 (`docs/folder-structure.md`): 새 파일·폴더를 만들거나 import 경로를 정할 때
 - 코드 컨벤션 (`docs/code-convention.md`): 코드를 작성하거나 수정할 때
+- 테스트 컨벤션 (`docs/test-convention.md`): 테스트 코드를 작성하거나 수정할 때
 - 커밋 컨벤션 (`docs/commit-convention.md`): 브랜치 생성, 커밋, PR 작성 시
 - 용어집 (`docs/glossary.md`): 도메인 개념에 이름을 붙이거나 새 용어가 생길 때
 
