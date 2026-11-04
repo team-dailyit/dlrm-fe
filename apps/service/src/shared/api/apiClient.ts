@@ -5,6 +5,10 @@ import { maskCoordinates } from './maskCoordinates';
 
 type QueryParams = Record<string, string | number | boolean | undefined>;
 
+interface ErrorResponseBody {
+  code: string;
+}
+
 export type ApiClientOptions = {
   baseUrl: string;
   fetch?: typeof fetch;
@@ -13,14 +17,26 @@ export type ApiClientOptions = {
 export type ApiClient = {
   get: <T>(path: string, params?: QueryParams) => Promise<T>;
 };
+function isErrorResponseBody(body: unknown): body is ErrorResponseBody {
+  return (
+    typeof body === 'object' &&
+    body !== null &&
+    'code' in body &&
+    typeof body.code === 'string'
+  );
+}
 
-// ky 에러 메시지에는 요청 URL(좌표 포함)이 실리므로 마스킹한 메시지로 바꿔 던진다
-function toApiError(error: unknown): unknown {
+async function toApiError(error: unknown): Promise<unknown> {
   if (isHTTPError(error)) {
+    const body: unknown = await error.response
+      .clone()
+      .json()
+      .catch(() => undefined);
+
     return new ApiError(
       error.response.status,
       `${error.response.status} ${maskCoordinates(error.request.url)}`,
-      'HTTP_ERROR',
+      isErrorResponseBody(body) ? body.code : 'UNKNOWN',
     );
   }
 
@@ -40,7 +56,6 @@ export function createApiClient({
 }: ApiClientOptions): ApiClient {
   const instance = ky.create({
     baseUrl,
-    // 재시도는 React Query가 맡는다 (queryClient 참고)
     retry: 0,
     ...(fetch && { fetch }),
   });
