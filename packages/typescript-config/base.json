@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    /* lib · types 는 각 프리셋(vite-app, vite-node, library)에서 지정하고, module 은 Node 용(vite-node)에서만 덮어씁니다. */
+    "target": "es2023",
+    "strict": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "verbatimModuleSyntax": true,
+    "moduleDetection": "force",
+
+    "jsx": "react-jsx",
+
+    /* Linting */
+    "noUnusedLocals": true,
+    "noUnusedParameters": true
+  }
+}
