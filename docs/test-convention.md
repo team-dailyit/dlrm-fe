@@ -72,12 +72,15 @@ JavaScript/TypeScript 테스트를 작성할 때 따르는 규칙이다. 테스�
 
 ## 테스트 더블 (Stub/Mock)
 
-9. **명명 규칙**: 스텁이나 목을 구현할 때 변수, 함수, 클래스 이름에 `Stub` 또는 `Mock`을 명시한다.
+9. **명명 규칙**: 테스트 더블은 이름에 역할을 붙인다.
 
-   ```typescript
-   const userRepositoryStub = { findById: () => defaultUser };
-   const emailServiceMock = { send: vi.fn() };
-   ```
+- 직접 만든 가짜 객체·함수: `Stub`(값을 돌려줌) 또는 `Mock`(호출을 검증함)
+  - `vi.spyOn`으로 기존 메서드를 감싼 것: `Spy`
+
+  ```typescript
+  const userRepositoryStub = { findById: () => defaultUser };
+  const emailServiceMock = { send: vi.fn() };
+  ```
 
 10. **모킹 최소화**: 반드시 필요한 경우가 아니면 모킹을 피한다. 모킹이 필수적이라면 그 이유를 주석으로 설명한다.
 
