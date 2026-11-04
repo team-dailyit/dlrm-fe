@@ -15,6 +15,7 @@
   "dependencies": {
     "@tanstack/react-query": "catalog:",
     "@tanstack/react-query-devtools": "catalog:",
+    "ky": "^2.2.0",
     "react": "catalog:",
     "react-dom": "catalog:",
     "react-router": "^8.3.0",
