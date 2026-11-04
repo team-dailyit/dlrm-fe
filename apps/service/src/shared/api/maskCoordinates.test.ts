@@ -7,11 +7,11 @@ describe('maskCoordinates', () => {
     it.each([
       [
         'lat, lng가 함께 있으면',
-        '/places/nearby?lat=37.5445&lng=127.0560&radius=500',
+        '/places?lat=37.5445&lng=127.0560&radius=500',
         ['37.5445', '127.0560'],
       ],
-      ['lng만 있으면', '/places/nearby?radius=500&lng=127.0560', ['127.0560']],
-      ['해시가 뒤따르면', '/places/nearby?lat=37.5445#top', ['37.5445']],
+      ['lng만 있으면', '/places?radius=500&lng=127.0560', ['127.0560']],
+      ['해시가 뒤따르면', '/places?lat=37.5445#top', ['37.5445']],
     ])('%s 좌표 값을 가립니다', (_label, url, coordinates) => {
       const masked = maskCoordinates(url);
 
@@ -21,8 +21,8 @@ describe('maskCoordinates', () => {
     });
 
     it.each([
-      ['/places/nearby?lat=37.5445&lng=127.0560&radius=500', 'radius=500'],
-      ['/places/nearby?lat=37.5445#top', '#top'],
+      ['/places?lat=37.5445&lng=127.0560&radius=500', 'radius=500'],
+      ['/places?lat=37.5445#top', '#top'],
     ])('%s에서 좌표가 아닌 부분은 유지합니다', (url, kept) => {
       expect(maskCoordinates(url)).toContain(kept);
     });

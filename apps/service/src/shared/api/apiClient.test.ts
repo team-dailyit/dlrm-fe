@@ -7,7 +7,10 @@ const BASE_URL = 'https://api.test';
 const REQUEST_TIMEOUT_MS = 10_000;
 
 function jsonResponse(body: unknown, status = 200) {
-  return new Response(JSON.stringify(body), { status });
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { 'Content-Type': 'application/json' },
+  });
 }
 
 // 실제 네트워크 요청을 없애기 위해 fetch는 Mock으로 주입합니다
@@ -41,20 +44,29 @@ describe('apiClient', () => {
           jsonResponse([{ id: 'place-1' }]),
         ]);
 
-        const result = await client.get('/places/nearby', {
+        const result = await client.get('/places', {
           radius: 500,
           category: undefined,
         });
 
         expect(result).toEqual([{ id: 'place-1' }]);
         expect(fetchMock).toHaveBeenCalledTimes(1);
-        expect(requestedUrl(fetchMock)).toBe(
-          `${BASE_URL}/places/nearby?radius=500`,
-        );
+        expect(requestedUrl(fetchMock)).toBe(`${BASE_URL}/places?radius=500`);
       });
     });
 
     describe('에러 응답을 받았을 때', () => {
+      it('백엔드의 에러 코드와 메시지를 ApiError에 전달합니다', async () => {
+        const body = {
+          status: 404,
+          code: 'PLACE_NOT_FOUND',
+          message: '장소를 찾을 수 없습니다.',
+        };
+        const { client } = setupClient([jsonResponse(body, 404)]);
+
+        await expect(client.get('/places/unknown')).rejects.toMatchObject(body);
+      });
+
       it.each([['5xx', 503]])(
         '%s이면 재시도하지 않고 상태 코드를 담은 ApiError를 던집니다',
         async (_label, status) => {
@@ -129,7 +141,7 @@ describe('apiClient', () => {
           const { client } = setupClient([failure]);
 
           const error = await client
-            .get('/places/nearby', COORDINATES)
+            .get('/places', COORDINATES)
             .catch((e: Error) => e);
 
           expect(error).toBeInstanceOf(Error);
@@ -141,7 +153,7 @@ describe('apiClient', () => {
         const { client } = setupClient([new TypeError('Failed to fetch')]);
 
         const error = await client
-          .get('/places/nearby', COORDINATES)
+          .get('/places', COORDINATES)
           .catch((e: Error) => e);
 
         expectNoCoordinates(String(((error as Error).cause as Error).message));
