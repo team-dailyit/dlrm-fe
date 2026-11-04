@@ -1,0 +1,16 @@
+{
+  "name": "vitest-config",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./react": "./react.ts"
+  },
+  "peerDependencies": {
+    "vitest": "^4.1.10"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "vitest": "^4.1.10"
+  }
+}

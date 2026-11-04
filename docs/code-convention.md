@@ -15,7 +15,7 @@
 
 ### 파일
 
-- 컴포넌트 파일명: React는 `PascalCase.tsx`, Next.js는 `kebab-case.tsx`
+- 컴포넌트 파일명: `PascalCase.tsx`
 - 컴포넌트가 아닌 파일(설정, 유틸 등): `camelCase.ts(x)` (예: `router.tsx`)
 - 훅 파일명: `useXxx.ts`
 - barrel export 파일명: `index.ts`

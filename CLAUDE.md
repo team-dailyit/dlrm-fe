@@ -7,7 +7,7 @@
 ## 기술 스택
 
 - 서비스: TypeScript, React, Vite
-- 어드민: TypeScript, Next.js
+- 어드민: TypeScript, React, Vite
 
 ## 실행 명령어
 
@@ -18,7 +18,7 @@
 
 ### 핵심 디렉토리 구조
 
-서비스(`apps/service`)와 어드민(`apps/admin`), 공통 패키지(`packages/shared`)로 구성된 모노레포다. 상세 구조는 `docs/folder-structure.md` 참고.
+서비스(`apps/service`)와 어드민(`apps/admin`), 공통 패키지(`packages/shared`, `packages/*-config`)로 구성된 모노레포다. 상세 구조는 `docs/folder-structure.md` 참고.
 
 ### 기타 규칙
 
