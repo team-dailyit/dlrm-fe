@@ -7,6 +7,7 @@ type QueryParams = Record<string, string | number | boolean | undefined>;
 
 interface ErrorResponseBody {
   code: string;
+  message: string;
 }
 
 export type ApiClientOptions = {
@@ -22,7 +23,9 @@ function isErrorResponseBody(body: unknown): body is ErrorResponseBody {
     typeof body === 'object' &&
     body !== null &&
     'code' in body &&
-    typeof body.code === 'string'
+    typeof body.code === 'string' &&
+    'message' in body &&
+    typeof body.message === 'string'
   );
 }
 
@@ -33,11 +36,14 @@ async function toApiError(error: unknown): Promise<unknown> {
       .json()
       .catch(() => undefined);
 
-    return new ApiError(
-      error.response.status,
-      `${error.response.status} ${maskCoordinates(error.request.url)}`,
-      isErrorResponseBody(body) ? body.code : 'UNKNOWN',
-    );
+    const { code, message } = isErrorResponseBody(body)
+      ? body
+      : {
+          code: 'UNKNOWN',
+          message: `${error.response.status} ${maskCoordinates(error.request.url)}`,
+        };
+
+    return new ApiError(error.response.status, message, code);
   }
 
   if (isNetworkError(error) || isTimeoutError(error)) {
@@ -64,7 +70,7 @@ export function createApiClient({
     try {
       return await instance.get(path, { searchParams: params }).json<T>();
     } catch (error) {
-      throw toApiError(error);
+      throw await toApiError(error);
     }
   }
 
