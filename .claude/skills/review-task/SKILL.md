@@ -46,6 +46,7 @@ CI(`.github/workflows/ci.yaml`)와 같은 명령을 같은 순서로 실행한�
 아래 문서를 읽고, 4단계에서 Standards 서브에이전트 프롬프트에 전체 내용을 담는다.
 
 - `docs/code-convention.md`
+- `docs/test-convention.md` (테스트 코드 확인용)
 - `docs/folder-structure.md`
 - `docs/glossary.md` (도메인 용어 확인용)
 - 문서가 커버하지 못하는 부분은 아래 **스멜 baseline**을 판단 기준(heuristic)으로 사용한다.
@@ -67,7 +68,7 @@ CI(`.github/workflows/ci.yaml`)와 같은 명령을 같은 순서로 실행한�
 **Standards 서브에이전트 프롬프트에 포함할 것**
 
 - diff 명령, 새 파일 목록, 커밋 목록
-- `code-convention.md` + `folder-structure.md` + `glossary.md` 전체 내용 + 아래 스멜 baseline 전체 (서브에이전트는 이 대화의 컨텍스트를 물려받지 않으므로, 판단 근거는 프롬프트에 모두 담는다)
+- `code-convention.md` + `test-convention.md` + `folder-structure.md` + `glossary.md` 전체 내용 + 아래 스멜 baseline 전체 (서브에이전트는 이 대화의 컨텍스트를 물려받지 않으므로, 판단 근거는 프롬프트에 모두 담는다)
 - 지시: "파일/hunk 단위로 (a) 문서화된 컨벤션 위반 사항 — 어떤 규칙을 어겼는지 인용, (b) baseline 스멜 — 이름과 해당 hunk 인용, 을 보고할 것. 확정 위반(문서화된 컨벤션)과 판단성 지적(스멜)을 구분할 것. 스멜은 항상 판단성 지적이며, 문서화된 규칙이 스멜보다 우선한다. 린트가 이미 강제하는 건 생략. 반드시 고쳐야 하는 것과 제안 수준을 구분해서 정리."
 - 추가 확인 지시: "(c) 새로운 도메인 용어가 코드에 등장했는데 `glossary.md`에 없거나 다른 이름으로 쓰였으면 보고할 것. (d) 새로운 환경 변수를 추가했는데 `.env.example`에 키가 없으면 보고할 것 (실제 값은 넣지 않고 키만)."
 
