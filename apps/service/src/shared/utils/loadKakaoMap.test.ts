@@ -93,6 +93,20 @@ describe('loadKakaoMap', () => {
     );
   });
 
+  describe('로드가 끝난 뒤 다시 호출했을 때', () => {
+    it('스크립트를 다시 넣지 않고 같은 Promise를 돌려줍니다', async () => {
+      const { loadKakaoMap } = await import('./loadKakaoMap');
+
+      const loaded = loadKakaoMap();
+      getScripts()[0].onload?.(new Event('load'));
+      finishKakaoMapsLoad();
+      await loaded;
+
+      expect(loadKakaoMap()).toBe(loaded);
+      expect(getScripts()).toHaveLength(1);
+    });
+  });
+
   describe('여러 번 호출했을 때', () => {
     it('스크립트는 한 번만 넣고 같은 Promise를 돌려줍니다', async () => {
       const { loadKakaoMap } = await import('./loadKakaoMap');
