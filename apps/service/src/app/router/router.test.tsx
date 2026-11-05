@@ -1,12 +1,20 @@
+import { QueryClientProvider } from '@tanstack/react-query';
 import { render, screen } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { describe, expect, it } from 'vitest';
 
+import { createQueryClient } from '@/shared/api';
+
 import { routes } from './router';
 
+// 화면이 React Query로 데이터를 읽으므로, 앱의 Providers와 같이 QueryClient를 감싸서 렌더합니다
 function renderAt(path: string) {
   const router = createMemoryRouter(routes, { initialEntries: [path] });
-  render(<RouterProvider router={router} />);
+  render(
+    <QueryClientProvider client={createQueryClient()}>
+      <RouterProvider router={router} />
+    </QueryClientProvider>,
+  );
 }
 
 function getHeading(name: string) {
