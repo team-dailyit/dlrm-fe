@@ -1,0 +1,25 @@
+@import 'tailwindcss';
+@import 'pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css';
+@import 'shared/styles/tokens.css';
+
+@theme {
+  --font-sans:
+    'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont,
+    system-ui, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic',
+    sans-serif;
+}
+
+/* box-sizing, html/body 여백 초기화는 Tailwind preflight 가 처리한다. */
+@layer base {
+  :root {
+    --safe-area-top: env(safe-area-inset-top, 0px);
+    --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  #root {
+    min-width: 360px;
+    max-width: 430px;
+    margin-inline: auto;
+    min-height: 100svh;
+  }
+}

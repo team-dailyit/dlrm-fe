@@ -1,4 +1,4 @@
-import './styles/index.scss';
+import './styles/index.css';
 
 import { RouterProvider } from 'react-router';
 

@@ -1,1 +1,113 @@
-/* 공통 디자인 토큰 */
+/*
+ * 공통 디자인 토큰 (Tailwind v4 @theme)
+ *
+ * 원본: 피그마 "들름" 파일의 '디자인시스템' 페이지 로컬 변수(Color / Radius)와 텍스트 스타일.
+ * Figma MCP(Plugin API)로 읽어 손으로 옮긴 값이다. 자동 동기화는 없으므로
+ * 피그마 값을 바꾸면 이 파일도 같이 고친다. 다크 모드 값은 아직 없다.
+ *
+ * `static` 이라 쓰지 않은 토큰도 CSS 변수로 항상 출력된다(인라인 스타일·JS에서 참조 가능).
+ *
+ * Spacing: 피그마 spacing 변수는 모두 4px 배수라 4px 단위 스케일(--spacing: 0.25rem)로 대응한다.
+ *   xs 4 → 1 · sm 8 → 2 · md 12 → 3 · lg 16 → 4 · xl 20 → 5 · 2xl 24 → 6 · 3xl 32 → 8  (예: gap-4, px-5)
+ *   `--spacing-xl` 같은 이름 토큰은 정의하지 않는다. Tailwind 는 max-w-* / w-* 값을 --spacing-* 에서 먼저 찾으므로
+ *   max-w-xl 이 36rem 대신 20px 가 되는 등 다른 유틸이 깨진다.
+ */
+
+@theme static {
+  /* Spacing — 4px 단위 */
+  --spacing: 0.25rem;
+
+  /* Color / Primary */
+  --color-primary-100: #ffedeb;
+  --color-primary-200: #ffc0c2;
+  --color-primary-300: #ffa295;
+  --color-primary-400: #ff7d6b;
+  --color-primary-500: #ff614c;
+  --color-primary-600: #f4462f;
+  --color-primary-700: #e93018;
+
+  /* Color / Blue */
+  --color-blue-100: #d6f9ff;
+  --color-blue-500: #2099fd;
+  --color-blue-600: #337aff;
+
+  /* Color / State */
+  --color-state-error: #e91616;
+  --color-state-success: #1687e9;
+
+  /* Color / Slate */
+  --color-white: #ffffff;
+  --color-slate-50: #f8fafc;
+  --color-slate-100: #f1f5f9;
+  --color-slate-200: #e2e8f0;
+  --color-slate-300: #cbd5e1;
+  --color-slate-400: #94a3b8;
+  --color-slate-500: #64748b;
+  --color-slate-600: #475569;
+  --color-slate-700: #334155;
+  --color-slate-800: #1e293b;
+  --color-slate-900: #0f172a;
+
+  /* Radius */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
+  --radius-3xl: 32px;
+  --radius-pill: 999px;
+
+  /*
+   * Typography — 피그마 텍스트 스타일 크기 단계. 굵기는 font-bold / font-semibold / font-medium / font-normal 로 조합한다.
+   *   예: Title/xl/bold → `text-title-xl font-bold`, Text/m/normal → `text-text-m font-normal`
+   * 크기·행간은 rem(16px 기준), 자간은 em.
+   * 자간 0인 단계도 0em 을 명시한다. letter-spacing 은 상속되므로 생략하면 부모(예: Title 의 -0.02em)를 물려받는다.
+   */
+  --text-display-xl: 3.5rem; /* 56 */
+  --text-display-xl--line-height: 4.25rem; /* 68 */
+  --text-display-xl--letter-spacing: -0.01em;
+  --text-display-lg: 3rem; /* 48 */
+  --text-display-lg--line-height: 3.75rem; /* 60 */
+  --text-display-lg--letter-spacing: -0.01em;
+  --text-display-md: 2.5rem; /* 40 */
+  --text-display-md--line-height: 3.5rem; /* 56 */
+  --text-display-md--letter-spacing: -0.01em;
+
+  --text-title-xl: 1.875rem; /* 30 */
+  --text-title-xl--line-height: 2.625rem; /* 42 */
+  --text-title-xl--letter-spacing: -0.02em;
+  --text-title-l: 1.5rem; /* 24 */
+  --text-title-l--line-height: 2rem; /* 32 */
+  --text-title-l--letter-spacing: -0.02em;
+  --text-title-m: 1.25rem; /* 20 */
+  --text-title-m--line-height: 1.875rem; /* 30 */
+  --text-title-m--letter-spacing: -0.02em;
+  --text-title-s: 1.125rem; /* 18 */
+  --text-title-s--line-height: 1.75rem; /* 28 */
+  --text-title-s--letter-spacing: -0.02em;
+
+  --text-body: 1rem; /* 16 */
+  --text-body--line-height: 1.5rem; /* 24 */
+  --text-body--letter-spacing: 0em;
+
+  --text-text-l: 0.9375rem; /* 15 */
+  --text-text-l--line-height: 1.25rem; /* 20 */
+  --text-text-l--letter-spacing: 0em;
+  --text-text-m: 0.875rem; /* 14 */
+  --text-text-m--line-height: 1.25rem; /* 20 */
+  --text-text-m--letter-spacing: 0em;
+  --text-text-s: 0.8125rem; /* 13 */
+  --text-text-s--line-height: 1.125rem; /* 18 */
+  --text-text-s--letter-spacing: 0em;
+
+  --text-caption-l: 0.75rem; /* 12 */
+  --text-caption-l--line-height: 1rem; /* 16 */
+  --text-caption-l--letter-spacing: 0em;
+  --text-caption-m: 0.6875rem; /* 11 */
+  --text-caption-m--line-height: 0.9375rem; /* 15 */
+  --text-caption-m--letter-spacing: 0em;
+  --text-caption-s: 0.625rem; /* 10 */
+  --text-caption-s--line-height: 0.875rem; /* 14 */
+  --text-caption-s--letter-spacing: 0em;
+}
