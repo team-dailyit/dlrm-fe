@@ -60,6 +60,39 @@ describe('loadKakaoMap', () => {
     });
   });
 
+  describe('SDK 스크립트를 불러왔지만 kakao.maps를 쓸 수 없을 때', () => {
+    it.each<[string, () => void]>([
+      [
+        'kakao 전역이 없으면',
+        () => {
+          delete (globalThis as KakaoGlobal).kakao;
+        },
+      ],
+      [
+        'kakao.maps.load가 예외를 던지면',
+        () => {
+          kakaoMapsLoadMock.mockImplementation(() => {
+            throw new Error('init failed');
+          });
+        },
+      ],
+    ])(
+      '%s reject하고 실패한 스크립트를 지운 뒤, 다음 호출에서 다시 시도합니다',
+      async (_label, breakKakaoMaps) => {
+        const { loadKakaoMap } = await import('./loadKakaoMap');
+        breakKakaoMaps();
+
+        const failed = loadKakaoMap();
+        getScripts()[0].onload?.(new Event('load'));
+        await expect(failed).rejects.toThrow('로드에 실패');
+        expect(getScripts()).toHaveLength(0);
+
+        void loadKakaoMap();
+        expect(getScripts()).toHaveLength(1);
+      },
+    );
+  });
+
   describe('여러 번 호출했을 때', () => {
     it('스크립트는 한 번만 넣고 같은 Promise를 돌려줍니다', async () => {
       const { loadKakaoMap } = await import('./loadKakaoMap');

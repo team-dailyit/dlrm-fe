@@ -19,11 +19,21 @@ export function loadKakaoMap(): Promise<void> {
     const script = document.createElement('script');
     script.src = `${SDK_URL}?appkey=${appKey}&autoload=false`;
     script.async = true;
-    script.onload = () => kakao.maps.load(() => resolve());
-    script.onerror = () => {
+
+    const fail = () => {
       script.remove();
       reject(new Error('카카오맵 SDK 로드에 실패했습니다.'));
     };
+    // 스크립트를 받았어도 kakao 전역이 없거나 초기화가 예외를 던질 수 있다.
+    // 이벤트 핸들러 안의 예외는 Promise로 전달되지 않으므로 직접 실패로 처리해야 다음 호출에서 다시 시도할 수 있다
+    script.onload = () => {
+      try {
+        kakao.maps.load(() => resolve());
+      } catch {
+        fail();
+      }
+    };
+    script.onerror = fail;
     document.head.appendChild(script);
   });
 
