@@ -1,5 +1,4 @@
 export {
-  type Coordinates,
   DEFAULT_RADIUS,
   type Radius,
   RADIUS_OPTIONS,
