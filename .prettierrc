@@ -13,6 +13,13 @@
       "options": {
         "plugins": ["prettier-plugin-tailwindcss"]
       }
+    },
+    {
+      "files": "apps/service/**/*.{ts,tsx}",
+      "options": {
+        "plugins": ["prettier-plugin-tailwindcss"],
+        "tailwindStylesheet": "./apps/service/src/app/styles/index.css"
+      }
     }
   ]
 }
