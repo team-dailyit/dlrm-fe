@@ -7,7 +7,7 @@
 ## 기술 스택
 
 - 서비스: TypeScript, React, Vite
-- 어드민: TypeScript, Next.js
+- 어드민: TypeScript, React, Vite
 
 ## 실행 명령어
 
@@ -18,7 +18,7 @@
 
 ### 핵심 디렉토리 구조
 
-서비스(`apps/service`)와 어드민(`apps/admin`), 공통 패키지(`packages/shared`)로 구성된 모노레포다. 상세 구조는 `docs/folder-structure.md` 참고.
+서비스(`apps/service`)와 어드민(`apps/admin`), 공통 패키지(`packages/shared`, `packages/*-config`)로 구성된 모노레포다. 상세 구조는 `docs/folder-structure.md` 참고.
 
 ### 기타 규칙
 
@@ -26,6 +26,7 @@
 
 - 폴더 구조 (`docs/folder-structure.md`): 새 파일·폴더를 만들거나 import 경로를 정할 때
 - 코드 컨벤션 (`docs/code-convention.md`): 코드를 작성하거나 수정할 때
+- 테스트 컨벤션 (`docs/test-convention.md`): 테스트 코드를 작성하거나 수정할 때
 - 커밋 컨벤션 (`docs/commit-convention.md`): 브랜치 생성, 커밋, PR 작성 시
 - 용어집 (`docs/glossary.md`): 도메인 개념에 이름을 붙이거나 새 용어가 생길 때
 

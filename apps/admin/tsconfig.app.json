@@ -1,0 +1,12 @@
+{
+  "extends": "typescript-config/vite-app.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+
+    /* vite.config.ts 의 resolve.tsconfigPaths 로 Vite 도 이 paths 를 그대로 씁니다. */
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": ["src", "vitest.setup.ts"]
+}
