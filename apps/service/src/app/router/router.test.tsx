@@ -16,7 +16,7 @@ function getHeading(name: string) {
 describe('router', () => {
   describe('정의된 경로로 접속했을 때', () => {
     it.each([
-      ['/', '온보딩'],
+      ['/', '시간이 남을 때, 걸어서 갈 만한 곳'],
       ['/neighborhood', '동네 고르기'],
       ['/map', '지도 홈'],
     ])('%s에서 "%s" 화면을 렌더합니다', (path, screenName) => {
