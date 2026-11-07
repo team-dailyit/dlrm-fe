@@ -28,7 +28,7 @@ function readStoredState() {
   );
 }
 
-// 새로고침을 흉내 내기 위해 저장소에 값을 직접 넣고 스토어를 다시 복원합니다
+// 새로고침을 흉내 내기 위해 저장소에 값을 직접 넣고 스토어를 다시 복원한다
 async function restoreFrom(persistedState: unknown) {
   sessionStorage.setItem(
     REFERENCE_POINT_STORAGE_KEY,
@@ -37,7 +37,7 @@ async function restoreFrom(persistedState: unknown) {
   await useReferencePointStore.persist.rehydrate();
 }
 
-// 각 테스트 전에 스토어를 초기화하고, reset이 저장소에 남긴 값까지 지워 테스트끼리 영향을 주지 않게 합니다
+// 각 테스트 전에 스토어를 초기화하고, reset이 저장소에 남긴 값까지 지워 테스트끼리 영향을 주지 않게 한다
 beforeEach(() => {
   getState().reset();
   sessionStorage.clear();
@@ -126,7 +126,7 @@ describe('referencePointStore', () => {
   });
 
   describe('sessionStorage에 쓰지 못할 때', () => {
-    // jsdom은 저장 공간 초과를 재현할 수 없어 setItem이 예외를 던지는 상황을 spy로 만듭니다
+    // jsdom은 저장 공간 초과를 재현할 수 없어 setItem이 예외를 던지는 상황을 spy로 만든다
     let setItemSpy: MockInstance<Storage['setItem']>;
 
     beforeEach(() => {

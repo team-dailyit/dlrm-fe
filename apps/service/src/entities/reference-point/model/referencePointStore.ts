@@ -79,7 +79,7 @@ const safeSessionStorage: Pick<Storage, 'getItem' | 'setItem' | 'removeItem'> =
       try {
         sessionStorage.setItem(key, value);
       } catch {
-        // 메모리 상태만 유지한다
+        // 저장에 실패해도 메모리 상태는 이미 바뀌었으므로 무시한다
       }
     },
     removeItem: (key) => sessionStorage.removeItem(key),
