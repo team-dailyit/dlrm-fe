@@ -66,7 +66,7 @@ it.each([
 - 명확성을 높일 수 있다면 함수나 클래스로 추출한다.
 
 ```typescript
-// 각 테스트 전에 인메모리 데이터베이스를 초기화하고 기본 사용자를 생성합니다
+// 각 테스트 전에 인메모리 데이터베이스를 초기화하고 기본 사용자를 생성한다
 beforeEach(async () => {
   await setupTestDatabase();
   defaultUser = await createDefaultUser();
@@ -96,7 +96,7 @@ const emailServiceMock = { send: vi.fn() };
 - 모킹이 필수라면 그 이유를 주석으로 설명한다.
 
 ```typescript
-// 외부 결제 API 호출을 모킹합니다: 실제 결제가 발생하는 것을 방지하고 테스트 속도를 높이기 위함
+// 외부 결제 API 호출을 모킹한다: 실제 결제가 발생하는 것을 방지하고 테스트 속도를 높이기 위함
 const paymentGatewayMock = vi.fn().mockResolvedValue({ success: true });
 ```
 
