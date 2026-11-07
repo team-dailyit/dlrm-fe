@@ -1,1 +1,3 @@
+pnpm run sync:skills
+git add .agents/skills
 pnpm exec lint-staged
