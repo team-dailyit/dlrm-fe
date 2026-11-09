@@ -1,9 +1,11 @@
 import { QueryClientProvider } from '@tanstack/react-query';
 import { render, screen } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router';
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 
+import { neighborhoodsHandler } from '@/entities/neighborhood/api/neighborhoodHandlers';
 import { createQueryClient } from '@/shared/api';
+import { mockServer } from '@/shared/testing/mockServer';
 
 import { routes } from './router';
 
@@ -16,6 +18,11 @@ function renderAt(path: string) {
     </QueryClientProvider>,
   );
 }
+
+// 동네 고르기 화면이 동네 API를 부르므로 응답을 정해 둡니다
+beforeEach(() => {
+  mockServer.use(neighborhoodsHandler);
+});
 
 function getHeading(name: string) {
   return screen.getByRole('heading', { name });

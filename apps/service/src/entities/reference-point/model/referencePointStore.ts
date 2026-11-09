@@ -3,7 +3,7 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 
 import type { Coordinates } from '@/shared/types';
 
-export const RADIUS_OPTIONS = [300, 500, 1000] as const;
+export const RADIUS_OPTIONS = [300, 500, 1000, 2000] as const;
 export const DEFAULT_RADIUS = 500;
 export const REFERENCE_POINT_STORAGE_KEY = 'dlrm-reference-point';
 const LAST_NEIGHBORHOOD_STORAGE_KEY = 'dlrm-last-neighborhood';
@@ -12,7 +12,7 @@ export type Radius = (typeof RADIUS_OPTIONS)[number];
 
 // 현재 위치의 coordinates 가 null 이면 아직 좌표를 얻기 전(새로고침 후 복원 직후 등)이다
 export type ReferencePoint =
-  | { type: 'neighborhood'; neighborhoodId: string }
+  | { type: 'neighborhood'; neighborhoodId: number }
   | { type: 'currentLocation'; coordinates: Coordinates | null };
 
 type ReferencePointState = {
@@ -21,7 +21,7 @@ type ReferencePointState = {
 };
 
 type ReferencePointActions = {
-  selectNeighborhood: (neighborhoodId: string) => void;
+  selectNeighborhood: (neighborhoodId: number) => void;
   selectCurrentLocation: (coordinates: Coordinates) => void;
   setRadius: (radius: Radius) => void;
   // sessionStorage 키를 지우지 않고 초기값({ referencePoint: null, radius: 500 })으로 덮어쓰고, localStorage의 지난 동네는 지운다.
@@ -48,6 +48,11 @@ function isRadius(value: unknown): value is Radius {
   return RADIUS_OPTIONS.some((option) => option === value);
 }
 
+// 동네 코드는 서버가 주는 정수 id 다
+function isNeighborhoodId(value: unknown): value is number {
+  return Number.isSafeInteger(value);
+}
+
 // 저장소 값은 사용자가 바꾸거나 손상됐을 수 있으므로 신뢰하지 않고 안전한 값으로 바로잡는다
 function parseReferencePoint(value: unknown): ReferencePoint | null {
   if (typeof value !== 'object' || value === null) {
@@ -61,7 +66,7 @@ function parseReferencePoint(value: unknown): ReferencePoint | null {
   if (type === 'currentLocation') {
     return { type, coordinates: null };
   }
-  if (type === 'neighborhood' && typeof neighborhoodId === 'string') {
+  if (type === 'neighborhood' && isNeighborhoodId(neighborhoodId)) {
     return { type, neighborhoodId };
   }
 
@@ -87,7 +92,7 @@ const safeSessionStorage: Pick<Storage, 'getItem' | 'setItem' | 'removeItem'> =
   };
 
 // 다음 방문 때는 동네 기준만 기억한다. 현재 위치는 재접속하면 위치 권한으로 다시 받으므로 남기지 않는다
-type LastNeighborhood = { neighborhoodId: string; radius: Radius };
+type LastNeighborhood = { neighborhoodId: number; radius: Radius };
 
 function forgetLastNeighborhood() {
   writeSafely(() => localStorage.removeItem(LAST_NEIGHBORHOOD_STORAGE_KEY));
@@ -112,7 +117,7 @@ function readLastNeighborhood(): ReferencePointState | null {
       neighborhoodId?: unknown;
       radius?: unknown;
     };
-    if (typeof neighborhoodId !== 'string') {
+    if (!isNeighborhoodId(neighborhoodId)) {
       return null;
     }
     return {

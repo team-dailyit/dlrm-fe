@@ -4,12 +4,19 @@ import userEvent from '@testing-library/user-event';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { beforeEach, describe, expect, it } from 'vitest';
 
+import { neighborhoodsHandler } from '@/entities/neighborhood/api/neighborhoodHandlers';
 import { useReferencePointStore } from '@/entities/reference-point';
 import { createQueryClient } from '@/shared/api';
+import { mockServer } from '@/shared/testing/mockServer';
 
 import NeighborhoodPage from './NeighborhoodPage';
 
 type User = ReturnType<typeof userEvent.setup>;
+
+const SEONGSU_ID = 1_000_000_000_001;
+const ANGUK_ID = 1_000_000_000_003;
+const HONGDAE_ID = 1_000_000_000_004;
+const UNKNOWN_ID = 9_999_999_999_999;
 
 // 동네 고르기 화면을 띄우고, 확인 후 이동했는지 알 수 있도록 지도 홈 자리에 제목만 둡니다
 function renderNeighborhoodPage() {
@@ -49,17 +56,18 @@ function getSavedReferencePoint() {
   return useReferencePointStore.getState().referencePoint;
 }
 
-// 테스트끼리 기준점이 남지 않도록 스토어와 저장소를 초기화합니다
+// 테스트끼리 기준점이 남지 않도록 스토어와 저장소를 초기화하고, 동네 API가 서비스 동네 4곳을 응답하도록 MSW 핸들러를 등록합니다
 beforeEach(() => {
   useReferencePointStore.getState().reset();
   sessionStorage.clear();
   localStorage.clear();
+  mockServer.use(neighborhoodsHandler);
 });
 
 describe('NeighborhoodPage', () => {
   describe('처음 들어왔을 때', () => {
     it.each(['성수', '강남', '안국', '홍대'])(
-      '서비스 동네인 %s 동네를 선택지로 보여줍니다',
+      '동네 API가 준 %s 동네를 선택지로 보여줍니다',
       async (name) => {
         renderNeighborhoodPage();
 
@@ -77,7 +85,7 @@ describe('NeighborhoodPage', () => {
 
   describe('이미 기준점이 저장되어 있을 때', () => {
     it('저장된 동네가 선택된 상태로 시작해 바로 확인할 수 있습니다', async () => {
-      useReferencePointStore.getState().selectNeighborhood('anguk');
+      useReferencePointStore.getState().selectNeighborhood(ANGUK_ID);
 
       renderNeighborhoodPage();
 
@@ -95,7 +103,7 @@ describe('NeighborhoodPage', () => {
       ],
       [
         '저장된 동네 코드가 목록에 없으면',
-        () => useReferencePointStore.getState().selectNeighborhood('unknown'),
+        () => useReferencePointStore.getState().selectNeighborhood(UNKNOWN_ID),
       ],
     ])(
       '%s 아무 동네도 선택하지 않습니다',
@@ -131,7 +139,7 @@ describe('NeighborhoodPage', () => {
 
       expect(getSavedReferencePoint()).toEqual({
         type: 'neighborhood',
-        neighborhoodId: 'seongsu',
+        neighborhoodId: SEONGSU_ID,
       });
       expect(router.state.location.pathname).toBe('/map');
     });
@@ -145,7 +153,7 @@ describe('NeighborhoodPage', () => {
 
       expect(getSavedReferencePoint()).toEqual({
         type: 'neighborhood',
-        neighborhoodId: 'hongdae',
+        neighborhoodId: HONGDAE_ID,
       });
     });
   });

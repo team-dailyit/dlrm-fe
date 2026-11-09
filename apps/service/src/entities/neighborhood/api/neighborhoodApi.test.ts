@@ -1,25 +1,26 @@
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 
-import { getNeighborhoodById } from './neighborhoodApi';
+import { mockServer } from '@/shared/testing/mockServer';
 
-describe('getNeighborhoodById', () => {
-  describe('서비스 동네 코드가 주어졌을 때', () => {
-    it('그 동네의 이름과 대표 좌표를 돌려줍니다', async () => {
-      const neighborhood = await getNeighborhoodById('seongsu');
+import { getNeighborhoods } from './neighborhoodApi';
+import { neighborhoodsHandler } from './neighborhoodHandlers';
 
-      expect(neighborhood).toEqual({
-        neighborhoodId: 'seongsu',
-        name: '성수',
-        coordinates: { lat: 37.5445, lng: 127.056 },
-      });
+describe('getNeighborhoods', () => {
+  describe('동네 목록을 받았을 때', () => {
+    // 백엔드 스펙 형태의 동네 목록을 응답하도록 MSW 핸들러를 등록합니다
+    beforeEach(() => {
+      mockServer.use(neighborhoodsHandler);
     });
-  });
 
-  describe('없는 동네 코드가 주어졌을 때', () => {
-    it('null을 돌려줍니다', async () => {
-      const neighborhood = await getNeighborhoodById('unknown');
+    it('동네 코드·이름·대표 좌표·열린 장소 수로 바꿔 돌려줍니다', async () => {
+      const [seongsu] = await getNeighborhoods();
 
-      expect(neighborhood).toBeNull();
+      expect(seongsu).toEqual({
+        neighborhoodId: 1_000_000_000_001,
+        name: '성수',
+        coordinates: { lat: 37.5445, lng: 127.0559 },
+        openPlaceCount: 136,
+      });
     });
   });
 });

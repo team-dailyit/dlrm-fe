@@ -16,7 +16,8 @@ import {
   useReferencePointStore,
 } from './referencePointStore';
 
-const NEIGHBORHOOD_ID = 'seongsu';
+const NEIGHBORHOOD_ID = 1_000_000_000_001;
+const ANOTHER_NEIGHBORHOOD_ID = 1_000_000_000_003;
 const COORDINATES: Coordinates = { lat: 37.5445, lng: 127.056 };
 
 function getState() {
@@ -181,14 +182,14 @@ describe('referencePointStore', () => {
     it('현재 위치 기준인 탭에서 반경만 바꿔도 다른 탭이 고른 지난 동네를 복원합니다', async () => {
       getState().selectCurrentLocation(COORDINATES);
       const anotherTab = await openAnotherTab();
-      anotherTab.selectNeighborhood('anguk');
+      anotherTab.selectNeighborhood(ANOTHER_NEIGHBORHOOD_ID);
 
       getState().setRadius(1000);
       const stateOnNextVisit = await visitAgain();
 
       expect(stateOnNextVisit.referencePoint).toEqual({
         type: 'neighborhood',
-        neighborhoodId: 'anguk',
+        neighborhoodId: ANOTHER_NEIGHBORHOOD_ID,
       });
     });
   });
@@ -216,7 +217,7 @@ describe('referencePointStore', () => {
     });
 
     it('새로 고른 동네를 기억하지 못하면 예전 동네도 남기지 않습니다', async () => {
-      getState().selectNeighborhood('hongdae');
+      getState().selectNeighborhood(ANOTHER_NEIGHBORHOOD_ID);
 
       const stateOnNextVisit = await visitAgain();
 
@@ -260,14 +261,14 @@ describe('referencePointStore', () => {
           type: 'neighborhood',
           neighborhoodId: NEIGHBORHOOD_ID,
         },
-        radius: 300,
+        radius: 2000,
       });
 
       expect(getState().referencePoint).toEqual({
         type: 'neighborhood',
         neighborhoodId: NEIGHBORHOOD_ID,
       });
-      expect(getState().radius).toBe(300);
+      expect(getState().radius).toBe(2000);
     });
 
     it('다음 방문용으로 남긴 지난 동네보다 이번 세션의 기준점을 먼저 복원합니다', async () => {
@@ -307,8 +308,10 @@ describe('referencePointStore', () => {
           { referencePoint: null, radius: 300 },
         ],
         [
-          '동네 코드가 문자열이 아니면',
-          { referencePoint: { type: 'neighborhood', neighborhoodId: 1 } },
+          '동네 코드가 숫자가 아니면',
+          {
+            referencePoint: { type: 'neighborhood', neighborhoodId: 'seongsu' },
+          },
           { referencePoint: null },
         ],
         [

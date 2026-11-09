@@ -1,39 +1,34 @@
+import { apiClient } from '@/shared/api';
+
 import type { Neighborhood } from '../model/neighborhood';
 
-// 백엔드 동네 API가 준비되기 전까지 쓰는 고정 데이터다. API로 바꿀 때는 아래 조회 함수만 교체한다
-const NEIGHBORHOODS: Neighborhood[] = [
-  {
-    neighborhoodId: 'seongsu',
-    name: '성수',
-    coordinates: { lat: 37.5445, lng: 127.056 },
-  },
-  {
-    neighborhoodId: 'gangnam',
-    name: '강남',
-    coordinates: { lat: 37.4979, lng: 127.0276 },
-  },
-  {
-    neighborhoodId: 'anguk',
-    name: '안국',
-    coordinates: { lat: 37.5765, lng: 126.9854 },
-  },
-  {
-    neighborhoodId: 'hongdae',
-    name: '홍대',
-    coordinates: { lat: 37.5572, lng: 126.9245 },
-  },
-];
+// GET /neighborhoods 응답 항목. 서버가 id 오름차순으로 정렬해 준다
+export type NeighborhoodResponse = {
+  id: number;
+  station_name: string;
+  lat: number;
+  lng: number;
+  open_place_count: number;
+};
 
-export async function getNeighborhoods(): Promise<Neighborhood[]> {
-  return NEIGHBORHOODS;
+function toNeighborhood({
+  id,
+  station_name,
+  lat,
+  lng,
+  open_place_count,
+}: NeighborhoodResponse): Neighborhood {
+  return {
+    neighborhoodId: id,
+    name: station_name,
+    coordinates: { lat, lng },
+    openPlaceCount: open_place_count,
+  };
 }
 
-export async function getNeighborhoodById(
-  neighborhoodId: string,
-): Promise<Neighborhood | null> {
-  return (
-    NEIGHBORHOODS.find(
-      (neighborhood) => neighborhood.neighborhoodId === neighborhoodId,
-    ) ?? null
-  );
+export async function getNeighborhoods(): Promise<Neighborhood[]> {
+  const neighborhoods =
+    await apiClient.get<NeighborhoodResponse[]>('/neighborhoods');
+
+  return neighborhoods.map(toNeighborhood);
 }

@@ -21,7 +21,7 @@ export default function NeighborhoodSelectForm({
     (state) => state.selectNeighborhood,
   );
   // 이미 동네를 기준점으로 저장했다면 그 동네를 미리 선택해 둔다. 목록에 없는 코드는 고르지 않은 것으로 본다
-  const [selectedId, setSelectedId] = useState<string | null>(() => {
+  const [selectedId, setSelectedId] = useState<number | null>(() => {
     if (referencePoint?.type !== 'neighborhood') {
       return null;
     }
@@ -32,7 +32,7 @@ export default function NeighborhoodSelectForm({
   });
 
   const handleConfirm = () => {
-    if (!selectedId) {
+    if (selectedId === null) {
       return;
     }
     selectNeighborhood(selectedId);
@@ -56,7 +56,11 @@ export default function NeighborhoodSelectForm({
           </label>
         ))}
       </fieldset>
-      <button type="button" disabled={!selectedId} onClick={handleConfirm}>
+      <button
+        type="button"
+        disabled={selectedId === null}
+        onClick={handleConfirm}
+      >
         확인
       </button>
     </>
