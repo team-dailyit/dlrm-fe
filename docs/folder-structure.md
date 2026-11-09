@@ -14,6 +14,7 @@
 - `entities`: 비즈니스 엔티티 (user, post, comment 등 도메인 모델 + API)
 - `shared`: 프로젝트 전역 공용 (ui 컴포넌트, hooks, utils, api 클라이언트, 여러 엔티티가 함께 쓰는 타입(`types`))
   - 같은 레이어의 엔티티끼리는 import할 수 없으므로, 여러 엔티티가 함께 쓰는 타입(예: 좌표 `Coordinates`)은 `shared/types`에 둔다
+  - 테스트 전용 코드(MSW 서버 `mockServer`)는 `shared/testing`에 두고, 앱 코드가 import하는 배럴에는 넣지 않는다. 엔티티별 MSW 핸들러와 응답 예시는 해당 엔티티 `api` 세그먼트에 `xxxHandlers.ts`로 둔다
 
 ## 폴더 구조
 
