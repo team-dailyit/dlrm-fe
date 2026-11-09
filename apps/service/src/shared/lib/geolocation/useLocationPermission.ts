@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 const REQUEST_TIMEOUT_MS = 10_000;
 // 일부 브라우저는 권한 팝업을 무시하거나 닫으면 콜백을 주지 않아, 브라우저 timeout과 별도로 요청을 끝낸다.
 // 브라우저 timeout은 팝업에 답하는 시간을 세지 않으므로, 팝업을 보는 동안 먼저 끝나지 않게 여유를 둔다
-const FALLBACK_TIMEOUT_MS = REQUEST_TIMEOUT_MS + 5_000;
+const FALLBACK_TIMEOUT_MS = REQUEST_TIMEOUT_MS + 5000;
 
 // GeolocationPositionError.code 값
 const POSITION_ERROR_PERMISSION_DENIED = 1;
