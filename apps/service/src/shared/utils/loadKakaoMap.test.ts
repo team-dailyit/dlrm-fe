@@ -17,11 +17,14 @@ function finishKakaoMapsLoad() {
   callback();
 }
 
+let loadKakaoMap: typeof import('./loadKakaoMap').loadKakaoMap;
+
 // loadKakaoMap은 모듈 안에 로드 상태를 들고 있어서, 테스트마다 모듈을 새로 불러오고 앱 키와 kakao 전역을 준비합니다
-beforeEach(() => {
+beforeEach(async () => {
   vi.resetModules();
   vi.stubEnv('VITE_KAKAO_MAP_APP_KEY', 'test-key');
   (globalThis as KakaoGlobal).kakao = { maps: { load: kakaoMapsLoadMock } };
+  ({ loadKakaoMap } = await import('./loadKakaoMap'));
 });
 
 // 다음 테스트에 앱 키, kakao 전역, 삽입한 스크립트가 남지 않도록 지웁니다
@@ -34,9 +37,7 @@ afterEach(() => {
 
 describe('loadKakaoMap', () => {
   describe('처음 호출했을 때', () => {
-    it('앱 키와 autoload=false를 붙인 SDK 스크립트를 넣습니다', async () => {
-      const { loadKakaoMap } = await import('./loadKakaoMap');
-
+    it('앱 키와 autoload=false를 붙인 SDK 스크립트를 넣습니다', () => {
       void loadKakaoMap();
 
       const [script] = getScripts();
@@ -47,7 +48,6 @@ describe('loadKakaoMap', () => {
 
   describe('SDK 스크립트를 불러온 뒤', () => {
     it('kakao.maps.load가 끝나야 resolve합니다', async () => {
-      const { loadKakaoMap } = await import('./loadKakaoMap');
       const onResolveMock = vi.fn();
 
       void loadKakaoMap().then(onResolveMock);
@@ -79,7 +79,6 @@ describe('loadKakaoMap', () => {
     ])(
       '%s reject하고 실패한 스크립트를 지운 뒤, 다음 호출에서 다시 시도합니다',
       async (_label, breakKakaoMaps) => {
-        const { loadKakaoMap } = await import('./loadKakaoMap');
         breakKakaoMaps();
 
         const failed = loadKakaoMap();
@@ -95,8 +94,6 @@ describe('loadKakaoMap', () => {
 
   describe('로드가 끝난 뒤 다시 호출했을 때', () => {
     it('스크립트를 다시 넣지 않고 같은 Promise를 돌려줍니다', async () => {
-      const { loadKakaoMap } = await import('./loadKakaoMap');
-
       const loaded = loadKakaoMap();
       getScripts()[0].onload?.(new Event('load'));
       finishKakaoMapsLoad();
@@ -108,9 +105,7 @@ describe('loadKakaoMap', () => {
   });
 
   describe('여러 번 호출했을 때', () => {
-    it('스크립트는 한 번만 넣고 같은 Promise를 돌려줍니다', async () => {
-      const { loadKakaoMap } = await import('./loadKakaoMap');
-
+    it('스크립트는 한 번만 넣고 같은 Promise를 돌려줍니다', () => {
       const first = loadKakaoMap();
       const second = loadKakaoMap();
 
@@ -121,8 +116,6 @@ describe('loadKakaoMap', () => {
 
   describe('로드에 실패했을 때', () => {
     it('reject하고 실패한 스크립트를 지운 뒤, 다음 호출에서 다시 시도합니다', async () => {
-      const { loadKakaoMap } = await import('./loadKakaoMap');
-
       const failed = loadKakaoMap();
       getScripts()[0].onerror?.(new Event('error'));
       await expect(failed).rejects.toThrow('로드에 실패');
@@ -136,7 +129,6 @@ describe('loadKakaoMap', () => {
   describe('앱 키가 없을 때', () => {
     it('스크립트를 넣지 않고 reject합니다', async () => {
       vi.stubEnv('VITE_KAKAO_MAP_APP_KEY', '');
-      const { loadKakaoMap } = await import('./loadKakaoMap');
 
       await expect(loadKakaoMap()).rejects.toThrow('VITE_KAKAO_MAP_APP_KEY');
       expect(getScripts()).toHaveLength(0);
