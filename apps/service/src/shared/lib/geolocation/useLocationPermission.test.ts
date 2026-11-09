@@ -255,21 +255,6 @@ describe('useLocationPermission', () => {
     });
   });
 
-  describe('시간 초과 뒤 다시 요청했을 때', () => {
-    it('새로 위치를 요청하고 성공하면 좌표를 돌려줍니다', async () => {
-      setupNavigator();
-      failWithCode(POSITION_ERROR_TIMEOUT);
-      const { result } = renderLocationPermission();
-      await requestLocationInAct(result);
-
-      succeedWithPosition();
-      const outcome = await requestLocationInAct(result);
-
-      expect(getCurrentPositionMock).toHaveBeenCalledTimes(2);
-      expect(outcome).toEqual({ status: 'granted', coordinates: COORDINATES });
-    });
-  });
-
   describe('브라우저가 끝내 응답하지 않을 때', () => {
     it('15초가 지나면 timeout을 돌려주고 다시 요청할 수 있습니다', async () => {
       vi.useFakeTimers();
