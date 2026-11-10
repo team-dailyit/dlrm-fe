@@ -1,7 +1,7 @@
 import { ApiError, NetworkError } from './errors';
 
 export const MAX_RETRY_COUNT = 3;
-// 재시도 대기 시간은 RETRY_BASE_DELAY_MS 에서 시작해 재시도마다 2배씩 늘어난다 (300, 600, 1200ms)
+// 서버가 회복할 시간을 주려고 재시도마다 대기 시간을 2배씩 늘린다 (300, 600, 1200ms)
 const RETRY_BASE_DELAY_MS = 300;
 const SERVER_ERROR_STATUS = 500;
 

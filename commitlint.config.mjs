@@ -7,7 +7,7 @@ const config = {
       'always',
       ['feat', 'fix', 'chore', 'docs', 'refactor', 'style', 'perf', 'test'],
     ],
-    // 한글은 대소문자 개념이 없어 기본 규칙이 오작동합니다.
+    // 한글은 대소문자 개념이 없어 기본 규칙이 오작동한다.
     'subject-case': [0],
     'body-max-line-length': [0],
   },

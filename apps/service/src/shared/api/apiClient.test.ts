@@ -13,7 +13,7 @@ function jsonResponse(body: unknown, status = 200) {
   });
 }
 
-// 실제 네트워크 요청을 없애기 위해 fetch는 Mock으로 주입합니다
+// 실제 네트워크 요청을 없애기 위해 fetch는 Mock으로 주입한다
 function setupClient(responses: Array<Response | Error>) {
   const fetchMock = vi.fn<typeof fetch>();
   responses.forEach((response) => {
