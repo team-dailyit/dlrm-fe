@@ -1,8 +1,10 @@
 import { http, HttpResponse } from 'msw';
 
+import { toApiUrl } from '@/shared/api';
+
 import type { NeighborhoodResponse } from './neighborhoodApi';
 
-// 테스트용 동네 API 응답이다. 백엔드 스펙(GET /neighborhoods) 형태를 그대로 따른다
+// 테스트와 개발 서버(MSW)가 함께 쓰는 동네 API 응답 예시다. 백엔드 스펙(GET /neighborhoods) 형태를 그대로 따른다
 export const NEIGHBORHOOD_RESPONSES: NeighborhoodResponse[] = [
   {
     id: 1_000_000_000_001,
@@ -34,7 +36,6 @@ export const NEIGHBORHOOD_RESPONSES: NeighborhoodResponse[] = [
   },
 ];
 
-export const neighborhoodsHandler = http.get(
-  `${import.meta.env.VITE_API_BASE_URL}/neighborhoods`,
-  () => HttpResponse.json(NEIGHBORHOOD_RESPONSES),
+export const neighborhoodsHandler = http.get(toApiUrl('/neighborhoods'), () =>
+  HttpResponse.json(NEIGHBORHOOD_RESPONSES),
 );
