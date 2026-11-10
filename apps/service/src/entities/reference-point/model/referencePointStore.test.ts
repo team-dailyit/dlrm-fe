@@ -8,14 +8,16 @@ import {
   vi,
 } from 'vitest';
 
+import type { Coordinates } from '@/shared/types';
+
 import {
-  type Coordinates,
   DEFAULT_RADIUS,
   REFERENCE_POINT_STORAGE_KEY,
   useReferencePointStore,
 } from './referencePointStore';
 
-const NEIGHBORHOOD_ID = 'seongsu';
+const NEIGHBORHOOD_ID = 1_000_000_000_001;
+const ANOTHER_NEIGHBORHOOD_ID = 1_000_000_000_003;
 const COORDINATES: Coordinates = { lat: 37.5445, lng: 127.056 };
 
 function getState() {
@@ -37,10 +39,30 @@ async function restoreFrom(persistedState: unknown) {
   await useReferencePointStore.persist.rehydrate();
 }
 
+// 탭을 닫아 sessionStorage가 사라진 뒤 앱을 다시 연 상황을 흉내 낸다.
+// 메모리 상태가 남지 않도록 스토어 모듈을 새로 불러와, 저장소에 남은 값만으로 시작한 상태를 돌려준다
+async function visitAgain() {
+  sessionStorage.clear();
+  vi.resetModules();
+  const { useReferencePointStore: storeOnNextVisit } =
+    await import('./referencePointStore');
+  await storeOnNextVisit.persist.rehydrate();
+  return storeOnNextVisit.getState();
+}
+
+// 같은 브라우저에 열린 다른 탭을 흉내 낸다. 모듈을 새로 불러와 지금 스토어와 메모리를 공유하지 않는 스토어를 돌려준다
+async function openAnotherTab() {
+  vi.resetModules();
+  const { useReferencePointStore: storeInAnotherTab } =
+    await import('./referencePointStore');
+  return storeInAnotherTab.getState();
+}
+
 // 각 테스트 전에 스토어를 초기화하고, reset이 저장소에 남긴 값까지 지워 테스트끼리 영향을 주지 않게 한다
 beforeEach(() => {
   getState().reset();
   sessionStorage.clear();
+  localStorage.clear();
 });
 
 describe('referencePointStore', () => {
@@ -125,7 +147,85 @@ describe('referencePointStore', () => {
     });
   });
 
-  describe('sessionStorage에 쓰지 못할 때', () => {
+  describe('다음 방문 때 (탭을 닫았다가 다시 열었을 때)', () => {
+    it('동네 기준이었으면 지난 동네와 반경을 복원합니다', async () => {
+      getState().selectNeighborhood(NEIGHBORHOOD_ID);
+      getState().setRadius(1000);
+
+      const stateOnNextVisit = await visitAgain();
+
+      expect(stateOnNextVisit.referencePoint).toEqual({
+        type: 'neighborhood',
+        neighborhoodId: NEIGHBORHOOD_ID,
+      });
+      expect(stateOnNextVisit.radius).toBe(1000);
+    });
+
+    it.each<[string, () => void]>([
+      [
+        '동네에서 현재 위치로 바꿨으면',
+        () => getState().selectCurrentLocation(COORDINATES),
+      ],
+      ['동네를 고른 뒤 초기화했으면', () => getState().reset()],
+    ])(
+      '%s 지난 동네를 복원하지 않습니다',
+      async (_label, changeReferencePoint) => {
+        getState().selectNeighborhood(NEIGHBORHOOD_ID);
+        changeReferencePoint();
+
+        const stateOnNextVisit = await visitAgain();
+
+        expect(stateOnNextVisit.referencePoint).toBeNull();
+      },
+    );
+
+    it('현재 위치 기준인 탭에서 반경만 바꿔도 다른 탭이 고른 지난 동네를 복원합니다', async () => {
+      getState().selectCurrentLocation(COORDINATES);
+      const anotherTab = await openAnotherTab();
+      anotherTab.selectNeighborhood(ANOTHER_NEIGHBORHOOD_ID);
+
+      getState().setRadius(1000);
+      const stateOnNextVisit = await visitAgain();
+
+      expect(stateOnNextVisit.referencePoint).toEqual({
+        type: 'neighborhood',
+        neighborhoodId: ANOTHER_NEIGHBORHOOD_ID,
+      });
+    });
+  });
+
+  describe('localStorage에만 쓰지 못할 때', () => {
+    let setItemSpy: MockInstance<Storage['setItem']>;
+
+    // 먼저 성수를 정상으로 저장해 두고, jsdom은 저장 공간 초과를 재현할 수 없어 localStorage에 쓸 때만 예외를 던지도록 spy로 만든다
+    beforeEach(() => {
+      getState().selectNeighborhood(NEIGHBORHOOD_ID);
+
+      const originalSetItem = Storage.prototype.setItem;
+      setItemSpy = vi
+        .spyOn(Storage.prototype, 'setItem')
+        .mockImplementation(function (this: Storage, key, value) {
+          if (this === localStorage) {
+            throw new DOMException('quota exceeded', 'QuotaExceededError');
+          }
+          originalSetItem.call(this, key, value);
+        });
+    });
+
+    afterEach(() => {
+      setItemSpy.mockRestore();
+    });
+
+    it('새로 고른 동네를 기억하지 못하면 예전 동네도 남기지 않습니다', async () => {
+      getState().selectNeighborhood(ANOTHER_NEIGHBORHOOD_ID);
+
+      const stateOnNextVisit = await visitAgain();
+
+      expect(stateOnNextVisit.referencePoint).toBeNull();
+    });
+  });
+
+  describe('저장소에 쓰지 못할 때', () => {
     // jsdom은 저장 공간 초과를 재현할 수 없어 setItem이 예외를 던지는 상황을 spy로 만든다
     let setItemSpy: MockInstance<Storage['setItem']>;
 
@@ -161,14 +261,28 @@ describe('referencePointStore', () => {
           type: 'neighborhood',
           neighborhoodId: NEIGHBORHOOD_ID,
         },
-        radius: 300,
+        radius: 2000,
       });
 
       expect(getState().referencePoint).toEqual({
         type: 'neighborhood',
         neighborhoodId: NEIGHBORHOOD_ID,
       });
-      expect(getState().radius).toBe(300);
+      expect(getState().radius).toBe(2000);
+    });
+
+    it('다음 방문용으로 남긴 지난 동네보다 이번 세션의 기준점을 먼저 복원합니다', async () => {
+      getState().selectNeighborhood(NEIGHBORHOOD_ID);
+
+      await restoreFrom({
+        referencePoint: { type: 'currentLocation', coordinates: null },
+        radius: 500,
+      });
+
+      expect(getState().referencePoint).toEqual({
+        type: 'currentLocation',
+        coordinates: null,
+      });
     });
 
     it('현재 위치 기준은 좌표 없음 상태로 복원해 화면이 좌표를 다시 얻게 합니다', async () => {
@@ -194,8 +308,10 @@ describe('referencePointStore', () => {
           { referencePoint: null, radius: 300 },
         ],
         [
-          '동네 코드가 문자열이 아니면',
-          { referencePoint: { type: 'neighborhood', neighborhoodId: 1 } },
+          '동네 코드가 숫자가 아니면',
+          {
+            referencePoint: { type: 'neighborhood', neighborhoodId: 'seongsu' },
+          },
           { referencePoint: null },
         ],
         [
