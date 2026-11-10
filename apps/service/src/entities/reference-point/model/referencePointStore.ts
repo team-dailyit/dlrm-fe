@@ -1,14 +1,15 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
-import type { Coordinates } from '@/shared/types';
+import {
+  type Coordinates,
+  DEFAULT_RADIUS,
+  type Radius,
+  RADIUS_OPTIONS,
+} from '@/shared/types';
 
-export const RADIUS_OPTIONS = [300, 500, 1000, 2000] as const;
-export const DEFAULT_RADIUS = 500;
 export const REFERENCE_POINT_STORAGE_KEY = 'dlrm-reference-point';
 const LAST_NEIGHBORHOOD_STORAGE_KEY = 'dlrm-last-neighborhood';
-
-export type Radius = (typeof RADIUS_OPTIONS)[number];
 
 // 현재 위치의 coordinates 가 null 이면 아직 좌표를 얻기 전(새로고침 후 복원 직후 등)이다
 export type ReferencePoint =
