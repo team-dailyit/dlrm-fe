@@ -9,7 +9,7 @@ import { mockServer } from '@/shared/testing/mockServer';
 
 import { routes } from './router';
 
-// 화면이 React Query로 데이터를 읽으므로, 앱의 Providers와 같이 QueryClient를 감싸서 렌더합니다
+// 화면이 React Query로 데이터를 읽으므로, 앱의 Providers와 같이 QueryClient를 감싸서 렌더한다
 function renderAt(path: string) {
   const router = createMemoryRouter(routes, { initialEntries: [path] });
   render(

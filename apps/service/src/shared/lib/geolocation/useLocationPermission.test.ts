@@ -24,7 +24,7 @@ type NavigatorSetup = {
     | 'unsupported';
 };
 
-// jsdom에는 Geolocation API가 없고, 실제 위치 요청을 보내지 않기 위해 getCurrentPosition을 mock으로 대신합니다
+// jsdom에는 Geolocation API가 없고, 실제 위치 요청을 보내지 않기 위해 getCurrentPosition을 mock으로 대신한다
 const getCurrentPositionMock = vi.fn<Geolocation['getCurrentPosition']>();
 
 function positionStub(): GeolocationPosition {
@@ -108,7 +108,7 @@ async function requestLocationInAct(
   return outcome;
 }
 
-// 테스트끼리 navigator stub, mock 응답, 가짜 타이머가 섞이지 않도록 매번 되돌리고 렌더한 훅을 정리합니다
+// 테스트끼리 navigator stub, mock 응답, 가짜 타이머가 섞이지 않도록 매번 되돌리고 렌더한 훅을 정리한다
 afterEach(() => {
   Reflect.deleteProperty(navigator, 'geolocation');
   Reflect.deleteProperty(navigator, 'permissions');

@@ -9,7 +9,7 @@ const getScripts = () =>
     'script[src*="dapi.kakao.com"]',
   );
 
-// 실제 SDK를 받지 않기 위해 kakao.maps.load를 mock으로 대신합니다. 콜백을 붙잡아 두어 SDK 초기화가 끝나는 시점을 테스트에서 정합니다
+// 실제 SDK를 받지 않기 위해 kakao.maps.load를 mock으로 대신한다. 콜백을 붙잡아 두어 SDK 초기화가 끝나는 시점을 테스트에서 정한다
 const kakaoMapsLoadMock = vi.fn<(callback: () => void) => void>();
 
 function finishKakaoMapsLoad() {
@@ -19,7 +19,7 @@ function finishKakaoMapsLoad() {
 
 let loadKakaoMap: typeof import('./loadKakaoMap').loadKakaoMap;
 
-// loadKakaoMap은 모듈 안에 로드 상태를 들고 있어서, 테스트마다 모듈을 새로 불러오고 앱 키와 kakao 전역을 준비합니다
+// loadKakaoMap은 모듈 안에 로드 상태를 들고 있어서, 테스트마다 모듈을 새로 불러오고 앱 키와 kakao 전역을 준비한다
 beforeEach(async () => {
   vi.resetModules();
   vi.stubEnv('VITE_KAKAO_MAP_APP_KEY', 'test-key');
