@@ -2,7 +2,6 @@ import { http, HttpResponse } from 'msw';
 
 import type { NeighborhoodResponse } from './neighborhoodApi';
 
-// 테스트용 동네 API 응답이다. 백엔드 스펙(GET /neighborhoods) 형태를 그대로 따른다
 export const NEIGHBORHOOD_RESPONSES: NeighborhoodResponse[] = [
   {
     id: 1_000_000_000_001,

@@ -27,7 +27,7 @@ beforeEach(async () => {
   ({ loadKakaoMap } = await import('./loadKakaoMap'));
 });
 
-// 다음 테스트에 앱 키, kakao 전역, 삽입한 스크립트가 남지 않도록 지웁니다
+// 다음 테스트에 앱 키, kakao 전역, 삽입한 스크립트가 남지 않도록 지운다
 afterEach(() => {
   vi.unstubAllEnvs();
   kakaoMapsLoadMock.mockReset();

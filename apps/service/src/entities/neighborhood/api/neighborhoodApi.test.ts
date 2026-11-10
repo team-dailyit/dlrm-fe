@@ -7,7 +7,6 @@ import { neighborhoodsHandler } from './neighborhoodHandlers';
 
 describe('getNeighborhoods', () => {
   describe('동네 목록을 받았을 때', () => {
-    // 백엔드 스펙 형태의 동네 목록을 응답하도록 MSW 핸들러를 등록한다
     beforeEach(() => {
       mockServer.use(neighborhoodsHandler);
     });

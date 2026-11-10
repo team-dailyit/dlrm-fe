@@ -19,7 +19,7 @@ function renderAt(path: string) {
   );
 }
 
-// 동네 고르기 화면이 동네 API를 부르므로 응답을 정해 둡니다
+// 동네 고르기 화면이 동네 API를 부르므로 응답을 정해 둔다
 beforeEach(() => {
   mockServer.use(neighborhoodsHandler);
 });

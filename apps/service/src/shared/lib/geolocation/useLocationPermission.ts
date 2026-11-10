@@ -6,7 +6,6 @@ const REQUEST_TIMEOUT_MS = 10_000;
 // 브라우저 timeout은 팝업에 답하는 시간을 세지 않으므로, 팝업을 보는 동안 먼저 끝나지 않게 여유를 둔다
 const FALLBACK_TIMEOUT_MS = REQUEST_TIMEOUT_MS + 5000;
 
-// GeolocationPositionError.code 값
 const POSITION_ERROR_PERMISSION_DENIED = 1;
 const POSITION_ERROR_TIMEOUT = 3;
 

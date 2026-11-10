@@ -2,17 +2,17 @@ packages:
   - 'apps/*'
   - 'packages/*'
 
-# packages/shared 가 컴파일되는 기준이라 워크스페이스 간에 반드시 같아야 하는 것만 둡니다.
-# 린트 · 테스트 도구처럼 갈려도 무해한 것은 각 package.json 에서 관리합니다.
+# packages/shared 가 컴파일되는 기준이라 워크스페이스 간에 반드시 같아야 하는 것만 둔다.
+# 린트 · 테스트 도구처럼 갈려도 무해한 것은 각 package.json 에서 관리한다.
 catalog:
   react: ^19.2.8
   react-dom: ^19.2.8
   '@types/react': ^19.2.17
   '@types/react-dom': ^19.2.3
-  # QueryClient 를 context 로 공유하므로 인스턴스가 하나여야 합니다.
+  # QueryClient 를 context 로 공유하므로 인스턴스가 하나여야 한다.
   '@tanstack/react-query': ^5.104.3
   '@tanstack/react-query-devtools': ^5.104.3
-  # 런타임이 Node 22 이므로 타입도 22 계열로 맞춥니다.
+  # 런타임이 Node 22 이므로 타입도 22 계열로 맞춘다.
   '@types/node': ^22.20.1
-  # 상한 있음: typescript-eslint 가 typescript <6.1.0 만 지원
+  # typescript-eslint 가 typescript <6.1.0 만 지원하므로 상한을 둔다
   typescript: ~6.0.3

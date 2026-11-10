@@ -16,7 +16,6 @@ export default defineConfig([
     rules: {
       'simple-import-sort/imports': 'error',
       'simple-import-sort/exports': 'error',
-      // 다섯 자리 이상 숫자는 세 자리마다 _ 로 구분합니다 (예: 10_000)
       'unicorn/numeric-separators-style': 'error',
     },
   },
