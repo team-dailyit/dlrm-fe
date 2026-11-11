@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 
 import { useReferencePointStore } from '@/entities/reference-point';
@@ -24,6 +24,8 @@ export function useOnboardingEntry() {
     (state) => state.selectCurrentLocation,
   );
   const [hasAutoLocateFailed, setHasAutoLocateFailed] = useState(false);
+  const pendingStartRef = useRef<Promise<void> | null>(null);
+  const isMountedRef = useRef(false);
 
   const shouldAutoLocate =
     !hasSavedNeighborhood &&
@@ -32,6 +34,14 @@ export function useOnboardingEntry() {
   // 진입 화면을 정하는 동안에는 온보딩이 잠깐 보였다가 사라지지 않도록 화면이 아무것도 그리지 않게 한다
   const isDeciding =
     hasSavedNeighborhood || permissionState === 'checking' || shouldAutoLocate;
+
+  // 마운트될 때마다 true 로 다시 둔다. StrictMode 는 effect 를 정리했다가 다시 실행하므로 초기값만으로는 부족하다
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   // 자동으로 넘어가는 이동은 replace 로 해서, 뒤로 가기로 온보딩에 돌아오지 않게 한다
   useEffect(() => {
@@ -62,15 +72,31 @@ export function useOnboardingEntry() {
     };
   }, [shouldAutoLocate, requestLocation, selectCurrentLocation, navigate]);
 
-  // "위치 허용하고 시작하기" 버튼 동작. 위치를 받지 못하면(거부·시간 초과·미지원·오류) 동네를 직접 고르게 한다
-  const startWithLocation = useCallback(async () => {
-    const result = await requestLocation();
-    if (result.status === 'granted') {
-      selectCurrentLocation(result.coordinates);
-      await navigate(MAP_HOME_PATH, { replace: true });
-      return;
+  // "위치 허용하고 시작하기" 버튼 동작. 위치를 받지 못하면(거부·시간 초과·미지원·오류) 동네를 직접 고르게 한다.
+  // isRequesting 은 다음 렌더에야 바뀌어 빠르게 두 번 누르면 막지 못하므로, 진행 중인 작업을 ref 에 두고 함께 기다리게 해서 저장·이동이 한 번만 일어나게 한다
+  const startWithLocation = useCallback((): Promise<void> => {
+    if (pendingStartRef.current) {
+      return pendingStartRef.current;
     }
-    await navigate(NEIGHBORHOOD_SELECT_PATH);
+    const pendingStart = (async () => {
+      const result = await requestLocation();
+      // 위치를 기다리는 동안 화면을 벗어났으면, 그 사이 사용자가 고른 기준점을 덮어쓰거나 다른 화면으로 끌고 가지 않도록 아무것도 하지 않는다
+      if (!isMountedRef.current) {
+        return;
+      }
+      if (result.status === 'granted') {
+        selectCurrentLocation(result.coordinates);
+        await navigate(MAP_HOME_PATH, { replace: true });
+        return;
+      }
+      await navigate(NEIGHBORHOOD_SELECT_PATH);
+    })().finally(() => {
+      // 끝나면 비워야 동네 고르기에서 뒤로 돌아온 뒤 다시 누를 수 있다
+      pendingStartRef.current = null;
+    });
+    pendingStartRef.current = pendingStart;
+
+    return pendingStart;
   }, [requestLocation, selectCurrentLocation, navigate]);
 
   return { isDeciding, isRequesting, startWithLocation };
