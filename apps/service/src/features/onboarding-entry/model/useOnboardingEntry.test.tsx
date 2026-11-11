@@ -10,7 +10,6 @@ import { useOnboardingEntry } from './useOnboardingEntry';
 const NEIGHBORHOOD_ID = 1_000_000_000_001;
 const COORDINATES = { lat: 37.5445, lng: 127.0559 };
 
-// GeolocationPositionError.code 값
 const POSITION_ERROR_PERMISSION_DENIED = 1;
 const POSITION_ERROR_TIMEOUT = 3;
 
@@ -24,8 +23,10 @@ function defineNavigatorProperty(
   Object.defineProperty(navigator, key, { value, configurable: true });
 }
 
-// 위치 권한 상태를 정한다. checking 이면 조회가 끝나지 않아 권한 상태를 아직 알 수 없는 상황이다.
-// 권한 조회가 끝난 뒤의 동작을 확인할 수 있도록 조회 Promise를 돌려준다
+/*
+ * 위치 권한 상태를 정한다. checking 이면 조회가 끝나지 않아 권한 상태를 아직 알 수 없는 상황이다.
+ * 권한 조회가 끝난 뒤의 동작을 확인할 수 있도록 조회 Promise를 돌려준다
+ */
 function setupPermission(state: PermissionState | 'checking') {
   const permissionQuery =
     state === 'checking'
@@ -53,7 +54,6 @@ function failWithCode(code: number) {
   });
 }
 
-// 응답이 오지 않아 위치를 받는 중인 상황이다
 function keepPositionPending() {
   getCurrentPositionMock.mockImplementation(() => {});
 }
@@ -169,8 +169,10 @@ describe('useOnboardingEntry', () => {
       expect(getSavedReferencePoint()).toBeNull();
     });
 
-    // 훅은 granted 인지만 보고 나머지 결과는 같게 처리하므로 대표 케이스 하나만 확인한다.
-    // 실패 종류를 나누는 것은 useLocationPermission 테스트에서 검증한다
+    /*
+     * 훅은 granted 인지만 보고 나머지 결과는 같게 처리하므로 대표 케이스 하나만 확인한다.
+     * 실패 종류를 나누는 것은 useLocationPermission 테스트에서 검증한다
+     */
     it('위치를 받지 못하면(예: 시간 초과) 온보딩을 보여줍니다', async () => {
       failWithCode(POSITION_ERROR_TIMEOUT);
 
@@ -241,8 +243,10 @@ describe('useOnboardingEntry', () => {
       expect(result.current.navigationType).toBe('REPLACE');
     });
 
-    // 훅은 granted 인지만 보고 나머지 결과는 같게 처리하므로 대표 케이스 하나만 확인한다.
-    // 실패 종류를 나누는 것은 useLocationPermission 테스트에서 검증한다
+    /*
+     * 훅은 granted 인지만 보고 나머지 결과는 같게 처리하므로 대표 케이스 하나만 확인한다.
+     * 실패 종류를 나누는 것은 useLocationPermission 테스트에서 검증한다
+     */
     it('위치를 받지 못하면(예: 거부) 기준점을 저장하지 않고 동네 고르기로 이동합니다', async () => {
       failWithCode(POSITION_ERROR_PERMISSION_DENIED);
       const { result } = renderOnboardingEntry();

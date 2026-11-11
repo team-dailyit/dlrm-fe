@@ -7,7 +7,7 @@ import { useLocationPermission } from '@/shared/lib/geolocation';
 const MAP_HOME_PATH = '/map';
 const NEIGHBORHOOD_SELECT_PATH = '/neighborhood';
 
-/**
+/*
  * 앱에 들어왔을 때(`/`) 온보딩을 보여줄지, 바로 지도 홈으로 보낼지 정한다.
  * 1. 저장된 동네가 있으면 지도 홈으로 보낸다. 사용자가 마지막에 직접 고른 기준을 따르기 위해 위치 권한보다 먼저 본다
  * 2. 위치 권한이 이미 허용되어 있으면 위치를 받아 현재 위치 기준으로 지도 홈으로 보낸다
@@ -72,8 +72,10 @@ export function useOnboardingEntry() {
     };
   }, [shouldAutoLocate, requestLocation, selectCurrentLocation, navigate]);
 
-  // "위치 허용하고 시작하기" 버튼 동작. 위치를 받지 못하면(거부·시간 초과·미지원·오류) 동네를 직접 고르게 한다.
-  // isRequesting 은 다음 렌더에야 바뀌어 빠르게 두 번 누르면 막지 못하므로, 진행 중인 작업을 ref 에 두고 함께 기다리게 해서 저장·이동이 한 번만 일어나게 한다
+  /*
+   * "위치 허용하고 시작하기" 버튼 동작. 위치를 받지 못하면(거부·시간 초과·미지원·오류) 동네를 직접 고르게 한다.
+   * isRequesting 은 다음 렌더에야 바뀌어 빠르게 두 번 누르면 막지 못하므로, 진행 중인 작업을 ref 에 두고 함께 기다리게 해서 저장·이동이 한 번만 일어나게 한다
+   */
   const startWithLocation = useCallback((): Promise<void> => {
     if (pendingStartRef.current) {
       return pendingStartRef.current;

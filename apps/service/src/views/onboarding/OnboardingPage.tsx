@@ -1,6 +1,6 @@
 import { useOnboardingEntry } from '@/features/onboarding-entry';
 
-// "위치 허용하고 시작하기" 버튼(startWithLocation 연결)은 온보딩 마크업(FE-171)이 머지된 뒤 FE-178 에서 붙인다
+// TODO(FE-178): 온보딩 마크업(FE-171)이 머지되면 "위치 허용하고 시작하기" 버튼에 startWithLocation 을 연결한다
 export default function OnboardingPage() {
   const { isDeciding } = useOnboardingEntry();
 
