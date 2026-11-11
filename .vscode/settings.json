@@ -5,8 +5,13 @@
     "source.fixAll.eslint": "explicit"
   },
 
-  // 모노레포에서 앱별 eslint.config 를 각각 인식
+  // 모노레포라 앱별 eslint.config 를 각각 인식해야 한다
   "eslint.workingDirectories": [{ "mode": "auto" }],
+
+  // tsconfig 프리셋은 파일 이름이 tsconfig 로 시작하지 않아 주석을 허용하는 JSONC 로 인식되지 않는다
+  "files.associations": {
+    "**/packages/typescript-config/*.json": "jsonc"
+  },
 
   "js/ts.tsdk.path": "node_modules/typescript/lib",
   "js/ts.tsdk.promptToUseWorkspaceVersion": true
