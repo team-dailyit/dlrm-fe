@@ -10,7 +10,6 @@ const COORDINATES = { lat: 37.5445, lng: 127.056 };
 const REQUEST_TIMEOUT_MS = 10_000;
 const FALLBACK_TIMEOUT_MS = 15_000;
 
-// GeolocationPositionError.code 값
 const POSITION_ERROR_PERMISSION_DENIED = 1;
 const POSITION_ERROR_POSITION_UNAVAILABLE = 2;
 const POSITION_ERROR_TIMEOUT = 3;
@@ -24,7 +23,7 @@ type NavigatorSetup = {
     | 'unsupported';
 };
 
-// jsdom에는 Geolocation API가 없고, 실제 위치 요청을 보내지 않기 위해 getCurrentPosition을 mock으로 대신합니다
+// jsdom에는 Geolocation API가 없고, 실제 위치 요청을 보내지 않기 위해 getCurrentPosition을 mock으로 대신한다
 const getCurrentPositionMock = vi.fn<Geolocation['getCurrentPosition']>();
 
 function positionStub(): GeolocationPosition {
@@ -37,7 +36,7 @@ function positionErrorStub(code: number): GeolocationPositionError {
   return { code } as GeolocationPositionError;
 }
 
-// change 이벤트를 실제로 보낼 수 있도록 EventTarget에 state만 붙입니다
+// change 이벤트를 실제로 보낼 수 있도록 EventTarget에 state만 붙인다
 function permissionStatusStub(state: PermissionState) {
   return Object.assign(new EventTarget(), { state });
 }
@@ -49,7 +48,7 @@ function defineNavigatorProperty(
   Object.defineProperty(navigator, key, { value, configurable: true });
 }
 
-// jsdom에는 Geolocation·Permissions API가 없어 테스트마다 navigator에 stub을 넣습니다
+// jsdom에는 Geolocation·Permissions API가 없어 테스트마다 navigator에 stub을 넣는다
 function setupNavigator({
   hasGeolocation = true,
   permissions = 'unsupported',
@@ -108,7 +107,7 @@ async function requestLocationInAct(
   return outcome;
 }
 
-// 테스트끼리 navigator stub, mock 응답, 가짜 타이머가 섞이지 않도록 매번 되돌리고 렌더한 훅을 정리합니다
+// 테스트끼리 navigator stub, mock 응답, 가짜 타이머가 섞이지 않도록 매번 되돌리고 렌더한 훅을 정리한다
 afterEach(() => {
   Reflect.deleteProperty(navigator, 'geolocation');
   Reflect.deleteProperty(navigator, 'permissions');
@@ -238,7 +237,7 @@ describe('useLocationPermission', () => {
   });
 
   describe('권한 상태가 prompt인데 거부 응답을 받았을 때', () => {
-    // 팝업을 닫거나 "이번만 안 함"을 고른 경우로, 실제 권한 상태는 prompt 그대로입니다
+    // 팝업을 닫거나 "이번만 안 함"을 고른 경우로, 실제 권한 상태는 prompt 그대로다
     it('권한 상태를 바꾸지 않고 다음 요청을 다시 보냅니다', async () => {
       setupNavigator({ permissions: { state: 'prompt' } });
       failWithCode(POSITION_ERROR_PERMISSION_DENIED);
@@ -307,7 +306,7 @@ describe('useLocationPermission', () => {
   });
 
   describe('위치를 요청하는 중일 때', () => {
-    // 응답 콜백을 바로 부르지 않고 붙잡아 두어 요청이 끝나지 않은 상태를 만듭니다
+    // 응답 콜백을 바로 부르지 않고 붙잡아 두어 요청이 끝나지 않은 상태를 만든다
     function holdPositionResponse() {
       let respond = () => {};
       getCurrentPositionMock.mockImplementation((success) => {

@@ -49,7 +49,6 @@ function isRadius(value: unknown): value is Radius {
   return RADIUS_OPTIONS.some((option) => option === value);
 }
 
-// 동네 코드는 서버가 주는 정수 id 다
 function isNeighborhoodId(value: unknown): value is number {
   return Number.isSafeInteger(value);
 }

@@ -9,7 +9,7 @@ import { mockServer } from '@/shared/testing/mockServer';
 
 import { routes } from './router';
 
-// 화면이 React Query로 데이터를 읽으므로, 앱의 Providers와 같이 QueryClient를 감싸서 렌더합니다
+// 화면이 React Query로 데이터를 읽으므로, 앱의 Providers와 같이 QueryClient를 감싸서 렌더한다
 function renderAt(path: string) {
   const router = createMemoryRouter(routes, { initialEntries: [path] });
   render(
@@ -19,7 +19,7 @@ function renderAt(path: string) {
   );
 }
 
-// 동네 고르기 화면이 동네 API를 부르므로 응답을 정해 둡니다
+// 동네 고르기 화면이 동네 API를 부르므로 응답을 정해 둔다
 beforeEach(() => {
   mockServer.use(neighborhoodsHandler);
 });

@@ -29,7 +29,7 @@ function readStoredState() {
   );
 }
 
-// 새로고침을 흉내 내기 위해 저장소에 값을 직접 넣고 스토어를 다시 복원합니다
+// 새로고침을 흉내 내기 위해 저장소에 값을 직접 넣고 스토어를 다시 복원한다
 async function restoreFrom(persistedState: unknown) {
   sessionStorage.setItem(
     REFERENCE_POINT_STORAGE_KEY,
@@ -38,8 +38,8 @@ async function restoreFrom(persistedState: unknown) {
   await useReferencePointStore.persist.rehydrate();
 }
 
-// 탭을 닫아 sessionStorage가 사라진 뒤 앱을 다시 연 상황을 흉내 냅니다.
-// 메모리 상태가 남지 않도록 스토어 모듈을 새로 불러와, 저장소에 남은 값만으로 시작한 상태를 돌려줍니다
+// 탭을 닫아 sessionStorage가 사라진 뒤 앱을 다시 연 상황을 흉내 낸다.
+// 메모리 상태가 남지 않도록 스토어 모듈을 새로 불러와, 저장소에 남은 값만으로 시작한 상태를 돌려준다
 async function visitAgain() {
   sessionStorage.clear();
   vi.resetModules();
@@ -49,7 +49,7 @@ async function visitAgain() {
   return storeOnNextVisit.getState();
 }
 
-// 같은 브라우저에 열린 다른 탭을 흉내 냅니다. 모듈을 새로 불러와 지금 스토어와 메모리를 공유하지 않는 스토어를 돌려줍니다
+// 같은 브라우저에 열린 다른 탭을 흉내 낸다. 모듈을 새로 불러와 지금 스토어와 메모리를 공유하지 않는 스토어를 돌려준다
 async function openAnotherTab() {
   vi.resetModules();
   const { useReferencePointStore: storeInAnotherTab } =
@@ -57,7 +57,7 @@ async function openAnotherTab() {
   return storeInAnotherTab.getState();
 }
 
-// 각 테스트 전에 스토어를 초기화하고, reset이 저장소에 남긴 값까지 지워 테스트끼리 영향을 주지 않게 합니다
+// 각 테스트 전에 스토어를 초기화하고, reset이 저장소에 남긴 값까지 지워 테스트끼리 영향을 주지 않게 한다
 beforeEach(() => {
   getState().reset();
   sessionStorage.clear();
@@ -196,7 +196,7 @@ describe('referencePointStore', () => {
   describe('localStorage에만 쓰지 못할 때', () => {
     let setItemSpy: MockInstance<Storage['setItem']>;
 
-    // 먼저 성수를 정상으로 저장해 두고, jsdom은 저장 공간 초과를 재현할 수 없어 localStorage에 쓸 때만 예외를 던지도록 spy로 만듭니다
+    // 먼저 성수를 정상으로 저장해 두고, jsdom은 저장 공간 초과를 재현할 수 없어 localStorage에 쓸 때만 예외를 던지도록 spy로 만든다
     beforeEach(() => {
       getState().selectNeighborhood(NEIGHBORHOOD_ID);
 
@@ -225,7 +225,7 @@ describe('referencePointStore', () => {
   });
 
   describe('저장소에 쓰지 못할 때', () => {
-    // jsdom은 저장 공간 초과를 재현할 수 없어 setItem이 예외를 던지는 상황을 spy로 만듭니다
+    // jsdom은 저장 공간 초과를 재현할 수 없어 setItem이 예외를 던지는 상황을 spy로 만든다
     let setItemSpy: MockInstance<Storage['setItem']>;
 
     beforeEach(() => {
