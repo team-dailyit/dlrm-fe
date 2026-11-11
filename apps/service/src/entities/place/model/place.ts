@@ -5,9 +5,9 @@ export type DayOfWeek = 'MON' | 'TUE' | 'WED' | 'THU' | 'FRI' | 'SAT' | 'SUN';
 export type OperatingHour = {
   dayOfWeek: DayOfWeek;
   isDayOff: boolean;
-  // "10:00" 형식
-  openTime: string;
-  closeTime: string;
+  // "10:00" 형식. 휴무일(isDayOff)이면 서버가 null 을 준다
+  openTime: string | null;
+  closeTime: string | null;
 };
 
 export type Place = {

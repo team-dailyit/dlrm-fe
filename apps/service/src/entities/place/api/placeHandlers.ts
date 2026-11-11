@@ -6,7 +6,7 @@ import type { PlacesResponse } from './placeApi';
 
 export const PLACES_URL = toApiUrl('/places');
 
-// 테스트와 개발 서버(MSW)가 함께 쓰는 장소 목록 API 응답 예시다. 백엔드 스펙(GET /places) 형태를 그대로 따르고, 서버가 가까운 순으로 정렬해 준다
+// 테스트와 개발 서버(MSW)가 함께 쓰는 장소 목록 API 응답 예시다. 백엔드 스펙(GET /places) 형태를 그대로 따르고, 서버가 가까운 순으로 정렬해 주고, operating_hours 는 항상 월~일 7개를 준다
 export const PLACES_RESPONSE: PlacesResponse = {
   places: [
     {
@@ -28,6 +28,36 @@ export const PLACES_RESPONSE: PlacesResponse = {
         {
           day_of_week: 'TUE',
           is_day_off: true,
+          open_time: null,
+          close_time: null,
+        },
+        {
+          day_of_week: 'WED',
+          is_day_off: false,
+          open_time: '10:00',
+          close_time: '21:00',
+        },
+        {
+          day_of_week: 'THU',
+          is_day_off: false,
+          open_time: '10:00',
+          close_time: '21:00',
+        },
+        {
+          day_of_week: 'FRI',
+          is_day_off: false,
+          open_time: '10:00',
+          close_time: '21:00',
+        },
+        {
+          day_of_week: 'SAT',
+          is_day_off: false,
+          open_time: '10:00',
+          close_time: '21:00',
+        },
+        {
+          day_of_week: 'SUN',
+          is_day_off: false,
           open_time: '10:00',
           close_time: '21:00',
         },
@@ -42,7 +72,50 @@ export const PLACES_RESPONSE: PlacesResponse = {
       lng: 127.0548,
       distance_m: 480,
       is_open_now: false,
-      operating_hours: [],
+      operating_hours: [
+        {
+          day_of_week: 'MON',
+          is_day_off: true,
+          open_time: null,
+          close_time: null,
+        },
+        {
+          day_of_week: 'TUE',
+          is_day_off: false,
+          open_time: '12:00',
+          close_time: '20:00',
+        },
+        {
+          day_of_week: 'WED',
+          is_day_off: false,
+          open_time: '12:00',
+          close_time: '20:00',
+        },
+        {
+          day_of_week: 'THU',
+          is_day_off: false,
+          open_time: '12:00',
+          close_time: '20:00',
+        },
+        {
+          day_of_week: 'FRI',
+          is_day_off: false,
+          open_time: '12:00',
+          close_time: '20:00',
+        },
+        {
+          day_of_week: 'SAT',
+          is_day_off: false,
+          open_time: '12:00',
+          close_time: '20:00',
+        },
+        {
+          day_of_week: 'SUN',
+          is_day_off: false,
+          open_time: '12:00',
+          close_time: '20:00',
+        },
+      ],
     },
   ],
 };

@@ -10,8 +10,8 @@ import type {
 type OperatingHourResponse = {
   day_of_week: DayOfWeek;
   is_day_off: boolean;
-  open_time: string;
-  close_time: string;
+  open_time: string | null;
+  close_time: string | null;
 };
 
 type PlaceResponse = {

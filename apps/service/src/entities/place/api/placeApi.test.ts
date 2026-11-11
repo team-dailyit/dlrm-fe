@@ -71,6 +71,36 @@ describe('getPlaces', () => {
           {
             dayOfWeek: 'TUE',
             isDayOff: true,
+            openTime: null,
+            closeTime: null,
+          },
+          {
+            dayOfWeek: 'WED',
+            isDayOff: false,
+            openTime: '10:00',
+            closeTime: '21:00',
+          },
+          {
+            dayOfWeek: 'THU',
+            isDayOff: false,
+            openTime: '10:00',
+            closeTime: '21:00',
+          },
+          {
+            dayOfWeek: 'FRI',
+            isDayOff: false,
+            openTime: '10:00',
+            closeTime: '21:00',
+          },
+          {
+            dayOfWeek: 'SAT',
+            isDayOff: false,
+            openTime: '10:00',
+            closeTime: '21:00',
+          },
+          {
+            dayOfWeek: 'SUN',
+            isDayOff: false,
             openTime: '10:00',
             closeTime: '21:00',
           },
