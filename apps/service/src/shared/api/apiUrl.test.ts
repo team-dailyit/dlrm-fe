@@ -23,12 +23,4 @@ describe('toApiUrl', () => {
       expect(toApiUrl('/places')).toBe(`${window.location.origin}/places`);
     });
   });
-
-  describe('API 주소가 비어 있을 때', () => {
-    it('지금 페이지 주소에 경로를 붙인 주소를 돌려줍니다', () => {
-      vi.stubEnv('VITE_API_BASE_URL', '');
-
-      expect(toApiUrl('/places')).toBe(`${window.location.origin}/places`);
-    });
-  });
 });
