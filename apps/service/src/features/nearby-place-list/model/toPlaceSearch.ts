@@ -1,6 +1,6 @@
 import type { PlaceSearch } from '@/entities/place';
 import type { ReferencePoint } from '@/entities/reference-point';
-import type { Radius } from '@/shared/types';
+import type { Radius } from '@/shared/model';
 
 /**
  * 기준점과 반경으로 장소 검색 조건을 만든다.

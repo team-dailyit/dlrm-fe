@@ -6,7 +6,7 @@ import {
   DEFAULT_RADIUS,
   type Radius,
   RADIUS_OPTIONS,
-} from '@/shared/types';
+} from '@/shared/model';
 
 export const REFERENCE_POINT_STORAGE_KEY = 'dlrm-reference-point';
 const LAST_NEIGHBORHOOD_STORAGE_KEY = 'dlrm-last-neighborhood';

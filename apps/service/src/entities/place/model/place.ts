@@ -1,4 +1,4 @@
-import type { Coordinates, Radius } from '@/shared/types';
+import type { Coordinates, Radius } from '@/shared/model';
 
 export type DayOfWeek = 'MON' | 'TUE' | 'WED' | 'THU' | 'FRI' | 'SAT' | 'SUN';
 

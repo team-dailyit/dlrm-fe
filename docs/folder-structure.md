@@ -12,8 +12,9 @@
   - FSD 표준 이름은 `pages`지만, 프레임워크의 `pages/` 라우터 폴더 관례와 겹치지 않도록 `views`를 쓴다.
 - `features`: 사용자 행동 단위 기능 (좋아요, 댓글작성, 로그인 등)
 - `entities`: 비즈니스 엔티티 (user, post, comment 등 도메인 모델 + API)
-- `shared`: 프로젝트 전역 공용 (ui 컴포넌트, hooks, utils, api 클라이언트, 여러 엔티티가 함께 쓰는 타입(`types`))
-  - 같은 레이어의 엔티티끼리는 import할 수 없으므로, 여러 엔티티가 함께 쓰는 타입(예: 좌표 `Coordinates`, 반경 `Radius`)은 `shared/types`에 둔다. 타입을 정의하는 값 목록·기본값처럼 타입과 떼어 놓을 수 없는 상수도 함께 둔다
+- `shared`: 프로젝트 전역 공용 (ui 컴포넌트 `ui`, 범용 함수·훅 `lib`, api 클라이언트 `api`, 여러 엔티티가 함께 쓰는 타입 `model`, 테스트 전용 코드 `testing`)
+  - 앱의 `src/shared` 세그먼트 이름은 FSD 규칙대로 안에 든 것의 종류(`types`, `utils`, `hooks`)가 아니라 목적(`ui`, `api`, `lib`, `config`, `model`)으로 짓는다. `lib` 안은 주제별 폴더(`geolocation`, `kakao-map`)로 나누고 폴더마다 `index.ts`로 내보낸다
+  - 같은 레이어의 엔티티끼리는 import할 수 없으므로, 여러 엔티티가 함께 쓰는 타입(예: 좌표 `Coordinates`, 반경 `Radius`)은 `shared/model`에 둔다. 타입을 정의하는 값 목록·기본값처럼 타입과 떼어 놓을 수 없는 상수도 함께 둔다
   - 테스트 전용 코드(MSW 서버 `mockServer`)는 `shared/testing`에 두고, 앱 코드가 import하는 배럴에는 넣지 않는다. 엔티티별 MSW 핸들러와 응답 예시는 해당 엔티티 `api` 세그먼트에 `xxxHandlers.ts`로 둔다
   - 개발 서버용 MSW(백엔드 서버 없이 개발할 때, `VITE_ENABLE_MSW=true`)는 `app/mocks`에 둔다. 새 엔티티 핸들러를 만들면 `app/mocks/handlers.ts`에 등록하고, 핸들러는 엔티티 배럴을 거치지 않고 직접 import한다
 

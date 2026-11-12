@@ -8,7 +8,7 @@ import {
   vi,
 } from 'vitest';
 
-import { type Coordinates, DEFAULT_RADIUS } from '@/shared/types';
+import { type Coordinates, DEFAULT_RADIUS } from '@/shared/model';
 
 import {
   REFERENCE_POINT_STORAGE_KEY,
