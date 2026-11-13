@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+import type { Coordinates } from '@/shared/types';
+
 // 동네 단위 기준점이라 고정밀도(GPS)는 쓰지 않고, 실내 등 수신이 느린 상황을 고려해 10초까지 기다린다
 const REQUEST_TIMEOUT_MS = 10_000;
 // 일부 브라우저는 권한 팝업을 무시하거나 닫으면 콜백을 주지 않아, 브라우저 timeout과 별도로 요청을 끝낸다.
@@ -8,11 +10,6 @@ const FALLBACK_TIMEOUT_MS = REQUEST_TIMEOUT_MS + 5000;
 
 const POSITION_ERROR_PERMISSION_DENIED = 1;
 const POSITION_ERROR_TIMEOUT = 3;
-
-type Coordinates = {
-  lat: number;
-  lng: number;
-};
 
 // checking: 권한 상태를 조회하는 중이라 아직 알 수 없다
 export type LocationPermissionState = PermissionState | 'checking';
