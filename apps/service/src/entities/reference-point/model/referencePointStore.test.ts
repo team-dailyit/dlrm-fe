@@ -8,10 +8,9 @@ import {
   vi,
 } from 'vitest';
 
-import type { Coordinates } from '@/shared/types';
+import { type Coordinates, DEFAULT_RADIUS } from '@/shared/model';
 
 import {
-  DEFAULT_RADIUS,
   REFERENCE_POINT_STORAGE_KEY,
   useReferencePointStore,
 } from './referencePointStore';

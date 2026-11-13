@@ -1,7 +1,7 @@
 // ESLint 는 config 를 cwd 기준으로 찾는다.
 // 루트에는 config 가 없으므로 각 워크스페이스 디렉터리에서 실행해야 한다.
 const eslintFix = (ws) => (files) =>
-  `pnpm --filter ${ws} exec eslint --fix --max-warnings 0 ${files.join(' ')}`;
+  `pnpm --filter ${ws} exec eslint --fix --no-warn-ignored --max-warnings 0 ${files.join(' ')}`;
 
 const LINTED = '{ts,tsx,mts,cts,js,mjs,cjs}';
 

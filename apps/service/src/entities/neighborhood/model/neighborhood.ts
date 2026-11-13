@@ -1,4 +1,4 @@
-import type { Coordinates } from '@/shared/types';
+import type { Coordinates } from '@/shared/model';
 
 export type Neighborhood = {
   neighborhoodId: number;

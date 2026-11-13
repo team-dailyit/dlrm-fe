@@ -1,5 +1,7 @@
 import { http, HttpResponse } from 'msw';
 
+import { toApiUrl } from '@/shared/api';
+
 import type { NeighborhoodResponse } from './neighborhoodApi';
 
 export const NEIGHBORHOOD_RESPONSES: NeighborhoodResponse[] = [
@@ -33,7 +35,6 @@ export const NEIGHBORHOOD_RESPONSES: NeighborhoodResponse[] = [
   },
 ];
 
-export const neighborhoodsHandler = http.get(
-  `${import.meta.env.VITE_API_BASE_URL}/neighborhoods`,
-  () => HttpResponse.json(NEIGHBORHOOD_RESPONSES),
+export const neighborhoodsHandler = http.get(toApiUrl('/neighborhoods'), () =>
+  HttpResponse.json(NEIGHBORHOOD_RESPONSES),
 );
