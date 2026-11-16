@@ -35,6 +35,7 @@ afterEach(() => {
 
 describe('sharePlace', () => {
   describe('기기 공유를 지원할 때', () => {
+    // 공유 창을 띄울 수 있는 브라우저로 만든다
     beforeEach(() => {
       setupShare();
     });
@@ -67,6 +68,12 @@ describe('sharePlace', () => {
     it('들름 장소 상세 주소를 클립보드에 복사하고 copied를 돌려줍니다', async () => {
       await expect(sharePlace(PLACE)).resolves.toBe('copied');
       expect(writeTextMock).toHaveBeenCalledWith(PLACE_DETAIL_URL);
+    });
+
+    it('클립보드에도 쓰지 못하면 failed를 돌려줍니다', async () => {
+      writeTextMock.mockRejectedValue(new DOMException('', 'NotAllowedError'));
+
+      await expect(sharePlace(PLACE)).resolves.toBe('failed');
     });
   });
 });

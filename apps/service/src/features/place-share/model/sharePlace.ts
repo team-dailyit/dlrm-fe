@@ -1,11 +1,8 @@
-import { copyText } from '@/shared/lib/clipboard';
+import type { Place } from '@/entities/place';
+import { type CopyResult,copyText } from '@/shared/lib/clipboard';
 
-export type ShareResult = 'shared' | 'copied' | 'cancelled' | 'failed';
-
-type SharedPlace = {
-  placeId: number;
-  name: string;
-};
+// 공유 창이 없으면 복사 결과를 그대로 돌려주므로 복사 결과를 포함한다
+export type ShareResult = 'shared' | 'cancelled' | CopyResult;
 
 // 받은 사람이 들름에서 바로 그 장소를 열도록 지금 사이트 주소 기준으로 장소 상세 주소를 만든다
 function toPlaceDetailUrl(placeId: number): string {
@@ -19,7 +16,7 @@ function toPlaceDetailUrl(placeId: number): string {
 export async function sharePlace({
   placeId,
   name,
-}: SharedPlace): Promise<ShareResult> {
+}: Pick<Place, 'placeId' | 'name'>): Promise<ShareResult> {
   const url = toPlaceDetailUrl(placeId);
 
   if (typeof navigator.share !== 'function') {
