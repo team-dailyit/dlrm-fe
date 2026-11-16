@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import type { Coordinates } from '@/shared/types';
+import type { Coordinates } from '@/shared/model';
 
 // 동네 단위 기준점이라 고정밀도(GPS)는 쓰지 않고, 실내 등 수신이 느린 상황을 고려해 10초까지 기다린다
 const REQUEST_TIMEOUT_MS = 10_000;
