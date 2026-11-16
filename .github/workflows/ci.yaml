@@ -5,6 +5,8 @@ on:
     branches: [main, develop]
   push:
     branches: [main, develop]
+  # 머지 큐는 develop 과 합친 임시 커밋에서 필수 체크(CI)가 통과해야 반영한다
+  merge_group:
   workflow_dispatch:
 
 permissions:
