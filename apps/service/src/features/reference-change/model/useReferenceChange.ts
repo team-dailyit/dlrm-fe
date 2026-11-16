@@ -7,7 +7,7 @@ import { useLocationPermission } from '@/shared/lib/geolocation';
 const NEIGHBORHOOD_SELECT_PATH = '/neighborhood';
 
 type UseReferenceChangeOptions = {
-  // 기준을 바꾼 뒤 시트를 닫는다
+  // 시트 열림 상태는 시트를 띄운 화면이 가지므로, 닫기는 콜백으로 받는다
   onClose: () => void;
 };
 
@@ -38,12 +38,20 @@ export function useReferenceChange({ onClose }: UseReferenceChangeOptions) {
     };
   }, []);
 
+  const selectedNeighborhoodId =
+    referencePoint?.type === 'neighborhood'
+      ? referencePoint.neighborhoodId
+      : null;
+
+  // 지금 기준과 같은 동네면 기준점을 새로 저장하지 않아, 기준점을 구독하는 화면이 괜히 다시 그려지지 않게 한다
   const chooseNeighborhood = useCallback(
     (neighborhoodId: number) => {
-      selectNeighborhood(neighborhoodId);
+      if (neighborhoodId !== selectedNeighborhoodId) {
+        selectNeighborhood(neighborhoodId);
+      }
       onClose();
     },
-    [selectNeighborhood, onClose],
+    [selectedNeighborhoodId, selectNeighborhood, onClose],
   );
 
   /*
@@ -77,10 +85,7 @@ export function useReferenceChange({ onClose }: UseReferenceChangeOptions) {
 
   return {
     isCurrentLocationSelected: referencePoint?.type === 'currentLocation',
-    selectedNeighborhoodId:
-      referencePoint?.type === 'neighborhood'
-        ? referencePoint.neighborhoodId
-        : null,
+    selectedNeighborhoodId,
     isLocating: isRequesting,
     chooseNeighborhood,
     chooseCurrentLocation,

@@ -13,21 +13,21 @@ const COORDINATES = { lat: 37.5445, lng: 127.0559 };
 
 const POSITION_ERROR_PERMISSION_DENIED = 1;
 
-// jsdom에는 Geolocation API가 없고, 실제 위치 요청을 보내지 않도록 getCurrentPosition을 mock으로 대신한다
-const getCurrentPositionMock = vi.fn<Geolocation['getCurrentPosition']>();
+// jsdom에는 Geolocation API가 없고, 실제 위치 요청을 보내지 않도록 getCurrentPosition을 stub으로 대신한다
+const getCurrentPositionStub = vi.fn<Geolocation['getCurrentPosition']>();
 
 // 시트를 닫는 함수가 불렸는지 확인한다
 const onCloseMock = vi.fn();
 
 function setupGeolocation() {
   Object.defineProperty(navigator, 'geolocation', {
-    value: { getCurrentPosition: getCurrentPositionMock },
+    value: { getCurrentPosition: getCurrentPositionStub },
     configurable: true,
   });
 }
 
 function succeedWithPosition() {
-  getCurrentPositionMock.mockImplementation((success) => {
+  getCurrentPositionStub.mockImplementation((success) => {
     success({
       coords: { latitude: COORDINATES.lat, longitude: COORDINATES.lng },
     } as GeolocationPosition);
@@ -35,7 +35,7 @@ function succeedWithPosition() {
 }
 
 function failWithDenied() {
-  getCurrentPositionMock.mockImplementation((_success, error) => {
+  getCurrentPositionStub.mockImplementation((_success, error) => {
     error?.({
       code: POSITION_ERROR_PERMISSION_DENIED,
     } as GeolocationPositionError);
@@ -45,7 +45,7 @@ function failWithDenied() {
 // 위치 응답을 붙잡아 두었다가, 돌려받은 함수를 부르면 그때 성공으로 응답한다
 function holdPositionUntilReleased() {
   let releasePosition = () => {};
-  getCurrentPositionMock.mockImplementation((success) => {
+  getCurrentPositionStub.mockImplementation((success) => {
     releasePosition = () =>
       success({
         coords: { latitude: COORDINATES.lat, longitude: COORDINATES.lng },
@@ -83,10 +83,10 @@ beforeEach(() => {
   setupGeolocation();
 });
 
-// 다음 테스트에 navigator stub과 mock 동작이 남지 않도록 지운다
+// 다음 테스트에 navigator stub과 stub·mock 동작이 남지 않도록 지운다
 afterEach(() => {
   Reflect.deleteProperty(navigator, 'geolocation');
-  getCurrentPositionMock.mockReset();
+  getCurrentPositionStub.mockReset();
   onCloseMock.mockReset();
 });
 
@@ -121,6 +121,25 @@ describe('useReferenceChange', () => {
       });
       expect(onCloseMock).toHaveBeenCalledOnce();
     });
+
+    it('지금 기준과 같은 동네면 기준을 바꾸지 않고 시트만 닫습니다', () => {
+      const referencePointBefore = getSavedReferencePoint();
+      const { result } = renderReferenceChange();
+
+      act(() => result.current.sheet.chooseNeighborhood(SEONGSU_ID));
+
+      expect(getSavedReferencePoint()).toBe(referencePointBefore);
+      expect(onCloseMock).toHaveBeenCalledOnce();
+    });
+
+    it('기준을 바꿔도 고른 반경은 그대로 둡니다', () => {
+      useReferencePointStore.getState().setRadius(1000);
+      const { result } = renderReferenceChange();
+
+      act(() => result.current.sheet.chooseNeighborhood(GANGNAM_ID));
+
+      expect(useReferencePointStore.getState().radius).toBe(1000);
+    });
   });
 
   describe('현재 위치를 눌렀을 때', () => {
@@ -136,6 +155,21 @@ describe('useReferenceChange', () => {
       });
       expect(onCloseMock).toHaveBeenCalledOnce();
       expect(result.current.pathname).toBe('/map');
+    });
+
+    it('이미 현재 위치 기준이어도 위치를 다시 받아 좌표를 갱신합니다', async () => {
+      useReferencePointStore
+        .getState()
+        .selectCurrentLocation({ lat: 37.5, lng: 127.0 });
+      succeedWithPosition();
+      const { result } = renderReferenceChange();
+
+      await act(() => result.current.sheet.chooseCurrentLocation());
+
+      expect(getSavedReferencePoint()).toEqual({
+        type: 'currentLocation',
+        coordinates: COORDINATES,
+      });
     });
 
     // 거부·시간 초과·미지원·오류는 위치 권한 훅이 구분하고, 이 훅은 성공이 아니면 모두 같이 처리하므로 거부를 대표로 확인한다
