@@ -1,4 +1,4 @@
-// 장소 목록과 지도 핀이 함께 쓰도록 categoryId 만 요구한다. 고른 카테고리가 없으면 전체를 보여준다
+// 고른 카테고리가 없으면 전체를 보여준다. 가까운 순서를 지키도록 받은 순서 그대로 거른다
 export function filterByCategories<T extends { categoryId: number }>(
   items: T[],
   selectedCategoryIds: readonly number[],
