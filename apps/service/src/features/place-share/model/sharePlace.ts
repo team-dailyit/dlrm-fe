@@ -1,5 +1,5 @@
 import type { Place } from '@/entities/place';
-import { type CopyResult,copyText } from '@/shared/lib/clipboard';
+import { type CopyResult, copyText } from '@/shared/lib/clipboard';
 
 // 공유 창이 없으면 복사 결과를 그대로 돌려주므로 복사 결과를 포함한다
 export type ShareResult = 'shared' | 'cancelled' | CopyResult;
