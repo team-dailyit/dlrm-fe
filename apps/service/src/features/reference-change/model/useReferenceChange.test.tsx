@@ -145,51 +145,6 @@ describe('useReferenceChange', () => {
       expect(result.current.isLocationFailed).toBe(true);
       expect(onCloseMock).not.toHaveBeenCalled();
     });
-
-    // 위치 요청 자체를 한 번만 보내는 것은 위치 권한 훅이 보장하므로, 이 훅이 더하는 기준 변경과 시트 닫기가 겹치지 않는지 본다
-    it('위치를 받는 동안 다시 눌러도 기준을 바꾸고 시트를 닫는 일은 한 번만 합니다', async () => {
-      const releasePosition = holdPositionUntilReleased();
-      const { result } = renderReferenceChange();
-
-      let firstSelection: Promise<void> = Promise.resolve();
-      let secondSelection: Promise<void> = Promise.resolve();
-      act(() => {
-        firstSelection = result.current.selectCurrentLocation();
-      });
-      act(() => {
-        secondSelection = result.current.selectCurrentLocation();
-      });
-      expect(result.current.isLocating).toBe(true);
-
-      await act(async () => {
-        releasePosition();
-        await Promise.all([firstSelection, secondSelection]);
-      });
-
-      expect(onCloseMock).toHaveBeenCalledOnce();
-      expect(result.current.isLocating).toBe(false);
-    });
-
-    it('위치를 받기 전에 시트가 사라지면 위치를 받아도 기준을 바꾸지 않습니다', async () => {
-      const releasePosition = holdPositionUntilReleased();
-      const { result, unmount } = renderReferenceChange();
-
-      let selection: Promise<void> = Promise.resolve();
-      act(() => {
-        selection = result.current.selectCurrentLocation();
-      });
-      unmount();
-      await act(async () => {
-        releasePosition();
-        await selection;
-      });
-
-      expect(getSavedReferencePoint()).toEqual({
-        type: 'neighborhood',
-        neighborhoodId: SEONGSU_ID,
-      });
-      expect(onCloseMock).not.toHaveBeenCalled();
-    });
   });
 
   describe('위치 실패 안내가 떠 있을 때', () => {

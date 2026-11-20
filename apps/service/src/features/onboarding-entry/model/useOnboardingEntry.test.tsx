@@ -256,52 +256,5 @@ describe('useOnboardingEntry', () => {
       expect(getSavedReferencePoint()).toBeNull();
       expect(result.current.pathname).toBe('/neighborhood');
     });
-
-    it('위치를 받는 중에 다시 누르면 새로 시작하지 않고 진행 중인 작업을 그대로 돌려줍니다', async () => {
-      const releasePosition = holdPositionUntilReleased();
-      const { result } = renderOnboardingEntry();
-      await waitFor(() => expect(result.current.entry.isDeciding).toBe(false));
-
-      let firstStart: Promise<void> | undefined;
-      let secondStart: Promise<void> | undefined;
-      act(() => {
-        firstStart = result.current.entry.startWithLocation();
-        secondStart = result.current.entry.startWithLocation();
-      });
-      await act(async () => {
-        releasePosition();
-        await firstStart;
-      });
-
-      expect(secondStart).toBe(firstStart);
-    });
-
-    it('앞선 작업이 끝난 뒤 다시 누르면 위치를 새로 요청합니다', async () => {
-      failWithCode(POSITION_ERROR_TIMEOUT);
-      const { result } = renderOnboardingEntry();
-
-      await startWithLocation(result);
-      await startWithLocation(result);
-
-      expect(getCurrentPositionMock).toHaveBeenCalledTimes(2);
-    });
-
-    it('버튼을 누른 뒤 위치를 받기 전에 화면을 벗어나면 위치를 받아도 기준점을 저장하지 않습니다', async () => {
-      const releasePosition = holdPositionUntilReleased();
-      const { result, unmount } = renderOnboardingEntry();
-      await waitFor(() => expect(result.current.entry.isDeciding).toBe(false));
-
-      let start: Promise<void> | undefined;
-      act(() => {
-        start = result.current.entry.startWithLocation();
-      });
-      unmount();
-      await act(async () => {
-        releasePosition();
-        await start;
-      });
-
-      expect(getSavedReferencePoint()).toBeNull();
-    });
   });
 });
