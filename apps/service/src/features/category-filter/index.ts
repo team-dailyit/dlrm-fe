@@ -1,2 +1,2 @@
+export { useCategoryFilterStore } from './model/categoryFilterStore';
 export { filterByCategories } from './model/filterByCategories';
-export { useCategoryFilter } from './model/useCategoryFilter';
