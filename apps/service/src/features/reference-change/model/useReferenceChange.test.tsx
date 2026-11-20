@@ -1,6 +1,4 @@
 import { act, renderHook } from '@testing-library/react';
-import type { ReactNode } from 'react';
-import { MemoryRouter, useLocation } from 'react-router';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { useReferencePointStore } from '@/entities/reference-point';
@@ -55,19 +53,8 @@ function holdPositionUntilReleased() {
   return () => releasePosition();
 }
 
-// 지도 홈(/map)에서 시트를 연 상태로, 훅의 결과와 함께 지금 경로를 확인할 수 있게 렌더한다
 function renderReferenceChange() {
-  return renderHook(
-    () => ({
-      sheet: useReferenceChange({ onClose: onCloseMock }),
-      pathname: useLocation().pathname,
-    }),
-    {
-      wrapper: ({ children }: { children: ReactNode }) => (
-        <MemoryRouter initialEntries={['/map']}>{children}</MemoryRouter>
-      ),
-    },
-  );
+  return renderHook(() => useReferenceChange({ onClose: onCloseMock }));
 }
 
 function getSavedReferencePoint() {
@@ -91,29 +78,11 @@ afterEach(() => {
 });
 
 describe('useReferenceChange', () => {
-  describe('시트를 열었을 때', () => {
-    it('동네 기준이면 그 동네를 선택된 상태로 알려줍니다', () => {
-      const { result } = renderReferenceChange();
-
-      expect(result.current.sheet.selectedNeighborhoodId).toBe(SEONGSU_ID);
-      expect(result.current.sheet.isCurrentLocationSelected).toBe(false);
-    });
-
-    it('현재 위치 기준이면 현재 위치를 선택된 상태로 알려줍니다', () => {
-      useReferencePointStore.getState().selectCurrentLocation(COORDINATES);
-
-      const { result } = renderReferenceChange();
-
-      expect(result.current.sheet.isCurrentLocationSelected).toBe(true);
-      expect(result.current.sheet.selectedNeighborhoodId).toBeNull();
-    });
-  });
-
   describe('동네를 눌렀을 때', () => {
     it('그 동네로 기준을 바꾸고 시트를 닫습니다', () => {
       const { result } = renderReferenceChange();
 
-      act(() => result.current.sheet.chooseNeighborhood(GANGNAM_ID));
+      act(() => result.current.selectNeighborhood(GANGNAM_ID));
 
       expect(getSavedReferencePoint()).toEqual({
         type: 'neighborhood',
@@ -126,19 +95,10 @@ describe('useReferenceChange', () => {
       const referencePointBefore = getSavedReferencePoint();
       const { result } = renderReferenceChange();
 
-      act(() => result.current.sheet.chooseNeighborhood(SEONGSU_ID));
+      act(() => result.current.selectNeighborhood(SEONGSU_ID));
 
       expect(getSavedReferencePoint()).toBe(referencePointBefore);
       expect(onCloseMock).toHaveBeenCalledOnce();
-    });
-
-    it('기준을 바꿔도 고른 반경은 그대로 둡니다', () => {
-      useReferencePointStore.getState().setRadius(1000);
-      const { result } = renderReferenceChange();
-
-      act(() => result.current.sheet.chooseNeighborhood(GANGNAM_ID));
-
-      expect(useReferencePointStore.getState().radius).toBe(1000);
     });
   });
 
@@ -147,14 +107,13 @@ describe('useReferenceChange', () => {
       succeedWithPosition();
       const { result } = renderReferenceChange();
 
-      await act(() => result.current.sheet.chooseCurrentLocation());
+      await act(() => result.current.selectCurrentLocation());
 
       expect(getSavedReferencePoint()).toEqual({
         type: 'currentLocation',
         coordinates: COORDINATES,
       });
       expect(onCloseMock).toHaveBeenCalledOnce();
-      expect(result.current.pathname).toBe('/map');
     });
 
     it('이미 현재 위치 기준이어도 위치를 다시 받아 좌표를 갱신합니다', async () => {
@@ -164,7 +123,7 @@ describe('useReferenceChange', () => {
       succeedWithPosition();
       const { result } = renderReferenceChange();
 
-      await act(() => result.current.sheet.chooseCurrentLocation());
+      await act(() => result.current.selectCurrentLocation());
 
       expect(getSavedReferencePoint()).toEqual({
         type: 'currentLocation',
@@ -173,17 +132,18 @@ describe('useReferenceChange', () => {
     });
 
     // 거부·시간 초과·미지원·오류는 위치 권한 훅이 구분하고, 이 훅은 성공이 아니면 모두 같이 처리하므로 거부를 대표로 확인한다
-    it('위치를 받지 못하면 기준을 바꾸지 않고 동네 고르기로 이동합니다', async () => {
+    it('위치를 받지 못하면 기준을 바꾸지 않고 시트를 연 채로 실패를 알립니다', async () => {
       failWithDenied();
       const { result } = renderReferenceChange();
 
-      await act(() => result.current.sheet.chooseCurrentLocation());
+      await act(() => result.current.selectCurrentLocation());
 
       expect(getSavedReferencePoint()).toEqual({
         type: 'neighborhood',
         neighborhoodId: SEONGSU_ID,
       });
-      expect(result.current.pathname).toBe('/neighborhood');
+      expect(result.current.isLocationFailed).toBe(true);
+      expect(onCloseMock).not.toHaveBeenCalled();
     });
 
     // 위치 요청 자체를 한 번만 보내는 것은 위치 권한 훅이 보장하므로, 이 훅이 더하는 기준 변경과 시트 닫기가 겹치지 않는지 본다
@@ -191,43 +151,72 @@ describe('useReferenceChange', () => {
       const releasePosition = holdPositionUntilReleased();
       const { result } = renderReferenceChange();
 
-      let firstChoice: Promise<void> = Promise.resolve();
-      let secondChoice: Promise<void> = Promise.resolve();
+      let firstSelection: Promise<void> = Promise.resolve();
+      let secondSelection: Promise<void> = Promise.resolve();
       act(() => {
-        firstChoice = result.current.sheet.chooseCurrentLocation();
+        firstSelection = result.current.selectCurrentLocation();
       });
       act(() => {
-        secondChoice = result.current.sheet.chooseCurrentLocation();
+        secondSelection = result.current.selectCurrentLocation();
       });
-      expect(result.current.sheet.isLocating).toBe(true);
+      expect(result.current.isLocating).toBe(true);
 
       await act(async () => {
         releasePosition();
-        await Promise.all([firstChoice, secondChoice]);
+        await Promise.all([firstSelection, secondSelection]);
       });
 
       expect(onCloseMock).toHaveBeenCalledOnce();
-      expect(result.current.sheet.isLocating).toBe(false);
+      expect(result.current.isLocating).toBe(false);
     });
 
     it('위치를 받기 전에 시트가 사라지면 위치를 받아도 기준을 바꾸지 않습니다', async () => {
       const releasePosition = holdPositionUntilReleased();
       const { result, unmount } = renderReferenceChange();
 
-      let choice: Promise<void> = Promise.resolve();
+      let selection: Promise<void> = Promise.resolve();
       act(() => {
-        choice = result.current.sheet.chooseCurrentLocation();
+        selection = result.current.selectCurrentLocation();
       });
       unmount();
       await act(async () => {
         releasePosition();
-        await choice;
+        await selection;
       });
 
       expect(getSavedReferencePoint()).toEqual({
         type: 'neighborhood',
         neighborhoodId: SEONGSU_ID,
       });
+      expect(onCloseMock).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('위치 실패 안내가 떠 있을 때', () => {
+    // 위치를 거부해 실패 안내가 뜬 시트에서 시작한다
+    beforeEach(() => {
+      failWithDenied();
+    });
+
+    it('위치 허용을 다시 시도하면 실패 안내를 지웁니다', async () => {
+      const { result } = renderReferenceChange();
+      await act(() => result.current.selectCurrentLocation());
+
+      holdPositionUntilReleased();
+      act(() => {
+        void result.current.selectCurrentLocation();
+      });
+
+      expect(result.current.isLocationFailed).toBe(false);
+    });
+
+    it('동네 고르기를 누르면 실패 안내를 닫고 시트는 연 채로 둡니다', async () => {
+      const { result } = renderReferenceChange();
+      await act(() => result.current.selectCurrentLocation());
+
+      act(() => result.current.dismissLocationFailure());
+
+      expect(result.current.isLocationFailed).toBe(false);
       expect(onCloseMock).not.toHaveBeenCalled();
     });
   });
