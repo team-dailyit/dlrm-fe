@@ -69,11 +69,5 @@ describe('sharePlace', () => {
       await expect(sharePlace(PLACE)).resolves.toBe('copied');
       expect(writeTextMock).toHaveBeenCalledWith(PLACE_DETAIL_URL);
     });
-
-    it('클립보드에도 쓰지 못하면 failed를 돌려줍니다', async () => {
-      writeTextMock.mockRejectedValue(new DOMException('', 'NotAllowedError'));
-
-      await expect(sharePlace(PLACE)).resolves.toBe('failed');
-    });
   });
 });

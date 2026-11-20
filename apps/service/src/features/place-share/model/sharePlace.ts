@@ -1,4 +1,5 @@
 import type { Place } from '@/entities/place';
+import { toPlaceDetailPath } from '@/shared/config';
 import { type CopyResult, copyText } from '@/shared/lib/clipboard';
 
 // 공유 창이 없으면 복사 결과를 그대로 돌려주므로 복사 결과를 포함한다
@@ -6,7 +7,7 @@ export type ShareResult = 'shared' | 'cancelled' | CopyResult;
 
 // 받은 사람이 들름에서 바로 그 장소를 열도록 지금 사이트 주소 기준으로 장소 상세 주소를 만든다
 function toPlaceDetailUrl(placeId: number): string {
-  return new URL(`/map/place/${placeId}`, window.location.origin).href;
+  return new URL(toPlaceDetailPath(placeId), window.location.origin).href;
 }
 
 /*
