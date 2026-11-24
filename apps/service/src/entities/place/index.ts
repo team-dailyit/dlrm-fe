@@ -1,5 +1,7 @@
 // 화면은 조회 함수 대신 쿼리 팩토리로 장소를 읽는다
 export { placeQueries } from './api/placeQueries';
+export { formatDistance } from './model/formatDistance';
+export { getOpeningStatus, type OpeningStatus } from './model/getOpeningStatus';
 export {
   type DayOfWeek,
   type OperatingHour,
