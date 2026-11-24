@@ -1,9 +1,9 @@
 import { queryOptions } from '@tanstack/react-query';
 
 import type { PlaceSearch } from '../model/place';
-import { getPlaces } from './placeApi';
+import { getPlaceDetail, getPlaces } from './placeApi';
 
-// 응답에 지금 영업 중인지(is_open_now)가 들어 있어 계속 캐시해 두면 안 된다. 1분이 지나면 다시 받는다
+// 목록·상세 응답에 지금 영업 중인지(is_open_now)가 들어 있어 계속 캐시해 두면 안 된다. 1분이 지나면 다시 받는다
 const PLACE_STALE_TIME_MS = 60 * 1000;
 
 export const placeQueries = {
@@ -15,6 +15,14 @@ export const placeQueries = {
     queryOptions({
       queryKey: [...placeQueries.lists(), search],
       queryFn: () => getPlaces(search),
+      staleTime: PLACE_STALE_TIME_MS,
+    }),
+
+  details: () => [...placeQueries.all(), 'detail'],
+  detail: (placeId: number) =>
+    queryOptions({
+      queryKey: [...placeQueries.details(), placeId],
+      queryFn: () => getPlaceDetail(placeId),
       staleTime: PLACE_STALE_TIME_MS,
     }),
 };

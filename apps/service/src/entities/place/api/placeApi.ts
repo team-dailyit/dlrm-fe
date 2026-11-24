@@ -4,6 +4,8 @@ import type {
   DayOfWeek,
   OperatingHour,
   Place,
+  PlaceDetail,
+  PlaceKeyword,
   PlaceSearch,
 } from '../model/place';
 
@@ -31,6 +33,19 @@ export type PlacesResponse = {
   places: PlaceResponse[];
 };
 
+type PlaceKeywordResponse = {
+  id: number;
+  name: string;
+};
+
+// GET /places/{id} 응답
+export type PlaceDetailResponse = Omit<PlaceResponse, 'distance_m'> & {
+  address: string;
+  sns_url: string | null;
+  homepage_url: string | null;
+  keywords: PlaceKeywordResponse[];
+};
+
 // 스펙상 lat/lng 와 neighborhood_id 중 하나만 보낸다
 function toPlacesParams(search: PlaceSearch) {
   if ('neighborhoodId' in search) {
@@ -55,27 +70,54 @@ function toOperatingHour({
   };
 }
 
-function toPlace({
+// 목록과 상세 응답에 함께 있는 필드를 바꾼다. 한쪽만 고쳐 둘이 달라지지 않도록 같이 쓴다
+function toPlaceBase({
   id,
   name,
   thumbnail_url,
   category_id,
   lat,
   lng,
-  distance_m,
   is_open_now,
   operating_hours,
-}: PlaceResponse): Place {
+}: Omit<PlaceResponse, 'distance_m'>): Omit<Place, 'distanceMeters'> {
   return {
     placeId: id,
     name,
     thumbnailUrl: thumbnail_url,
     categoryId: category_id,
     coordinates: { lat, lng },
-    distanceMeters: distance_m,
     isOpenNow: is_open_now,
     operatingHours: operating_hours.map(toOperatingHour),
   };
+}
+
+function toPlace(response: PlaceResponse): Place {
+  return { ...toPlaceBase(response), distanceMeters: response.distance_m };
+}
+
+function toPlaceKeyword({ id, name }: PlaceKeywordResponse): PlaceKeyword {
+  return { keywordId: id, name };
+}
+
+function toPlaceDetail(response: PlaceDetailResponse): PlaceDetail {
+  const { address, sns_url, homepage_url, keywords } = response;
+
+  return {
+    ...toPlaceBase(response),
+    address,
+    snsUrl: sns_url,
+    homepageUrl: homepage_url,
+    keywords: keywords.map(toPlaceKeyword),
+  };
+}
+
+export async function getPlaceDetail(placeId: number): Promise<PlaceDetail> {
+  const response = await apiClient.get<PlaceDetailResponse>(
+    `/places/${placeId}`,
+  );
+
+  return toPlaceDetail(response);
 }
 
 export async function getPlaces(search: PlaceSearch): Promise<Place[]> {

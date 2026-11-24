@@ -1,10 +1,14 @@
 import { categoriesHandler } from '@/entities/category/api/categoryHandlers';
 import { neighborhoodsHandler } from '@/entities/neighborhood/api/neighborhoodHandlers';
-import { placesHandler } from '@/entities/place/api/placeHandlers';
+import {
+  placeDetailHandler,
+  placesHandler,
+} from '@/entities/place/api/placeHandlers';
 
 // 개발 서버에서 MSW 가 응답할 API 목록이다. 테스트와 같은 응답 예시를 쓴다
 export const handlers = [
   categoriesHandler,
   neighborhoodsHandler,
   placesHandler,
+  placeDetailHandler,
 ];
