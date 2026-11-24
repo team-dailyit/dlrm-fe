@@ -11,7 +11,7 @@ function getState() {
 
 // 스토어는 모듈에 하나만 있어서, 테스트끼리 고른 카테고리가 남지 않도록 비운다
 beforeEach(() => {
-  getState().reset();
+  getState().clearCategories();
 });
 
 describe('useCategoryFilterStore', () => {
@@ -35,6 +35,17 @@ describe('useCategoryFilterStore', () => {
       getState().toggleCategory(EXHIBITION);
 
       expect(getState().selectedCategoryIds).toEqual([POPUP]);
+    });
+  });
+
+  describe('전체 보기를 눌렀을 때', () => {
+    it('고른 카테고리를 모두 풉니다', () => {
+      getState().toggleCategory(EXHIBITION);
+      getState().toggleCategory(POPUP);
+
+      getState().clearCategories();
+
+      expect(getState().selectedCategoryIds).toEqual([]);
     });
   });
 });
