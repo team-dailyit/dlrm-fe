@@ -6,7 +6,8 @@ type CategoryFilterState = {
 
 type CategoryFilterActions = {
   toggleCategory: (categoryId: number) => void;
-  reset: () => void;
+  // "전체 보기". 고른 카테고리를 모두 풀어 전체 장소를 보여준다
+  clearCategories: () => void;
 };
 
 const initialState: CategoryFilterState = {
@@ -27,5 +28,5 @@ export const useCategoryFilterStore = create<
         ? selectedCategoryIds.filter((id) => id !== categoryId)
         : [...selectedCategoryIds, categoryId],
     })),
-  reset: () => set(initialState),
+  clearCategories: () => set({ selectedCategoryIds: [] }),
 }));
