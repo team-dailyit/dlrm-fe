@@ -1,1 +1,1 @@
-export { ROUTE_PATHS, toPlaceDetailPath } from './routes';
+export { PageNotFoundError, ROUTE_PATHS, toPlaceDetailPath } from './routes';
