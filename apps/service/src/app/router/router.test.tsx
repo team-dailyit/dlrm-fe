@@ -41,7 +41,7 @@ describe('router', () => {
     });
 
     it('/map/place/:id에서 지도 홈 위에 장소 상세를 함께 렌더합니다', () => {
-      renderAt('/map/place/place-1');
+      renderAt('/map/place/9000000000101');
 
       expect(getHeading('지도 홈')).toBeInTheDocument();
       expect(getHeading('장소 상세')).toBeInTheDocument();
@@ -49,7 +49,8 @@ describe('router', () => {
   });
 
   describe('정의되지 않은 경로로 접속했을 때', () => {
-    it.each(['/unknown', '/map/unknown', '/map/place'])(
+    // /map/place/abc 는 경로 모양은 맞지만 장소 코드가 정수 표기가 아니어서 없는 페이지로 본다
+    it.each(['/unknown', '/map/unknown', '/map/place', '/map/place/abc'])(
       '%s에서는 지도 홈 없이 404 안내 화면만 렌더합니다',
       (path) => {
         renderAt(path);

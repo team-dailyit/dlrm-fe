@@ -23,6 +23,20 @@ export type Place = {
   operatingHours: OperatingHour[];
 };
 
+export type PlaceKeyword = {
+  keywordId: number;
+  name: string;
+};
+
+// 장소 상세. 거리는 기준점이 있어야 계산되므로 상세 응답에는 없다
+export type PlaceDetail = Omit<Place, 'distanceMeters'> & {
+  address: string;
+  // 장소에 SNS·홈페이지가 없으면 서버가 null 을 준다
+  snsUrl: string | null;
+  homepageUrl: string | null;
+  keywords: PlaceKeyword[];
+};
+
 // 장소 검색 조건. 동네 기준이면 동네 코드로, 현재 위치 기준이면 좌표로 찾는다
 export type PlaceSearch =
   | { neighborhoodId: number; radius: Radius }

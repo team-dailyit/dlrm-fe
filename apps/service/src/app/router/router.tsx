@@ -7,12 +7,15 @@ import { NotFoundPage } from '@/views/not-found';
 import { OnboardingPage } from '@/views/onboarding';
 import { PlaceDetailPage } from '@/views/place-detail';
 
+import { MapHomeErrorBoundary } from './MapHomeErrorBoundary';
+
 export const routes: RouteObject[] = [
   { path: ROUTE_PATHS.onboarding, Component: OnboardingPage },
   { path: ROUTE_PATHS.neighborhood, Component: NeighborhoodPage },
   {
     path: ROUTE_PATHS.mapHome,
     Component: MapHomePage,
+    ErrorBoundary: MapHomeErrorBoundary,
     children: [{ path: ROUTE_PATHS.placeDetail, Component: PlaceDetailPage }],
   },
   { path: '*', Component: NotFoundPage },

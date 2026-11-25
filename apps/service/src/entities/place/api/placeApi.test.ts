@@ -3,8 +3,12 @@ import { beforeEach, describe, expect, it } from 'vitest';
 
 import { mockServer } from '@/shared/testing/mockServer';
 
-import { getPlaces } from './placeApi';
-import { PLACES_RESPONSE, PLACES_URL } from './placeHandlers';
+import { getPlaceDetail, getPlaces } from './placeApi';
+import {
+  placeDetailHandler,
+  PLACES_RESPONSE,
+  PLACES_URL,
+} from './placeHandlers';
 
 const NEIGHBORHOOD_ID = 1_000_000_000_001;
 const COORDINATES = { lat: 37.5445, lng: 127.0559 };
@@ -106,6 +110,44 @@ describe('getPlaces', () => {
           },
         ],
       });
+    });
+  });
+});
+
+describe('getPlaceDetail', () => {
+  // 요청한 장소 코드의 상세를 응답하는 MSW 핸들러를 등록한다. 다른 장소가 오면 장소 코드를 잘못 보낸 것이다
+  beforeEach(() => {
+    mockServer.use(placeDetailHandler);
+  });
+
+  // 영업시간 변환은 getPlaces 와 같은 함수를 쓰므로, 상세에만 있는 필드를 중심으로 본다
+  it('장소 코드로 상세를 요청하고, 주소·SNS·홈페이지·키워드를 함께 바꿔 돌려줍니다', async () => {
+    const placeDetail = await getPlaceDetail(9_000_000_000_101);
+
+    expect(placeDetail).toMatchObject({
+      placeId: 9_000_000_000_101,
+      name: '슈퍼마리오 스페셜 팝업',
+      thumbnailUrl: 'https://images.test/mario.png',
+      categoryId: 5_000_000_000_002,
+      coordinates: { lat: 37.5445, lng: 127.0559 },
+      isOpenNow: true,
+      address: '서울 성동구 연무장7길 10',
+      snsUrl: 'https://instagram.com/mario.popup',
+      homepageUrl: 'https://mario-popup.test',
+      keywords: [
+        { keywordId: 7_000_000_000_001, name: '팝업스토어' },
+        { keywordId: 7_000_000_000_002, name: '가족과함께' },
+      ],
+    });
+  });
+
+  it('SNS·홈페이지가 없는 장소는 null 로, 키워드가 없는 장소는 빈 목록으로 돌려줍니다', async () => {
+    const placeDetail = await getPlaceDetail(9_000_000_000_102);
+
+    expect(placeDetail).toMatchObject({
+      snsUrl: null,
+      homepageUrl: null,
+      keywords: [],
     });
   });
 });

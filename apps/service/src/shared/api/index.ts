@@ -5,5 +5,5 @@ export {
 } from './apiClient';
 export { toApiUrl } from './apiUrl';
 export { apiClient } from './client';
-export { ApiError, NetworkError } from './errors';
+export { ApiError, isNotFoundError, NetworkError } from './errors';
 export { createQueryClient } from './queryClient';

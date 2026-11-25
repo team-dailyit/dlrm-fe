@@ -4,5 +4,7 @@ export {
   type DayOfWeek,
   type OperatingHour,
   type Place,
+  type PlaceDetail,
+  type PlaceKeyword,
   type PlaceSearch,
 } from './model/place';
